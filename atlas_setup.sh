@@ -69,9 +69,8 @@ echo -e "${GREEN}Workspace will be: $WORKSPACE_PATH${NC}"
 if [ -d "$WORKSPACE_PATH" ]; then
     echo -e "${YELLOW}Warning: Workspace already exists${NC}"
     echo "Do you want to continue? (This may overwrite existing files)"
-    read -p "Continue? (y/N): " -n 1 -r
-    echo ""
-    if [[ ! $REPLY =~ ^[Yy]$ ]]; then
+    read -p "Continue? (y/N): " CONTINUE_RESPONSE
+    if [[ ! "$CONTINUE_RESPONSE" =~ ^[Yy] ]]; then
         echo -e "${RED}Setup cancelled${NC}"
         exit 1
     fi
@@ -92,7 +91,7 @@ echo -e "${GREEN}✓ Created input_prompts/ and results/ directories${NC}"
 echo ""
 echo -e "${YELLOW}Step 4: Sample Content${NC}"
 echo "Do you want to create sample ARS research prompts and synthesis question?"
-echo -e "${BLUE}(Press Enter for yes, or type 'no' to skip)${NC}"
+echo -e "${BLUE}(Default is yes if you just press Enter)${NC}"
 read -p "Create samples? (Y/n): " CREATE_SAMPLES
 
 if [[ ! "$CREATE_SAMPLES" =~ ^[Nn] ]]; then
@@ -146,23 +145,25 @@ if [ "$SCRIPTS_COPIED" = false ] && [ -f "$SETUP_DIR/scripts/ollama_batch_automa
     fi
 fi
 
-# Location 2: Current working directory when setup was run  
+# Store the original directory where the setup script was run from
 ORIGINAL_DIR="$(pwd)"
-TEMP_DIR="$ORIGINAL_DIR"
+
+# Location 2: Look in the repository directory where user ran setup from
 if [ "$SCRIPTS_COPIED" = false ]; then
-    # Check if we're not already in the workspace
-    if [ "$ORIGINAL_DIR" != "$WORKSPACE_PATH" ]; then
-        cd "$ORIGINAL_DIR" 2>/dev/null || true
-        
-        if [ -f "scripts/ollama_batch_automation.sh" ]; then
-            if cp "scripts/ollama_batch_automation.sh" "$WORKSPACE_PATH/" 2>/dev/null && \
-               cp "scripts/ollama_interactive.sh" "$WORKSPACE_PATH/" 2>/dev/null; then
-                cd "$WORKSPACE_PATH"
-                chmod +x ollama_batch_automation.sh ollama_interactive.sh
-                echo -e "${GREEN}✓ Copied scripts from: $ORIGINAL_DIR/scripts/${NC}"
-                SCRIPTS_COPIED=true
-            fi
+    echo -e "${BLUE}Looking for scripts in: $ORIGINAL_DIR/scripts/${NC}"
+    
+    if [ -f "$ORIGINAL_DIR/scripts/ollama_batch_automation.sh" ] && [ -f "$ORIGINAL_DIR/scripts/ollama_interactive.sh" ]; then
+        echo -e "${BLUE}Found scripts, copying to workspace...${NC}"
+        if cp "$ORIGINAL_DIR/scripts/ollama_batch_automation.sh" "$WORKSPACE_PATH/" && \
+           cp "$ORIGINAL_DIR/scripts/ollama_interactive.sh" "$WORKSPACE_PATH/"; then
+            chmod +x "$WORKSPACE_PATH/ollama_batch_automation.sh" "$WORKSPACE_PATH/ollama_interactive.sh"
+            echo -e "${GREEN}✓ Successfully copied scripts from: $ORIGINAL_DIR/scripts/${NC}"
+            SCRIPTS_COPIED=true
+        else
+            echo -e "${RED}Failed to copy scripts${NC}"
         fi
+    else
+        echo -e "${YELLOW}Scripts not found in $ORIGINAL_DIR/scripts/${NC}"
     fi
 fi
 
@@ -235,31 +236,18 @@ fi
 
 echo ""
 
-# Step 8: Test setup with small model
-echo -e "${YELLOW}Step 8: Testing Setup${NC}"
-echo "Do you want to test the setup with a small model ($DEFAULT_TEST_MODEL)?"
-echo -e "${BLUE}This will verify everything is working correctly${NC}"
-read -p "Test setup? (Y/n): " TEST_SETUP
+# Step 8: Option to launch interactive session
+echo -e "${YELLOW}Step 8: Test Your Setup${NC}"
+echo "Do you want to immediately test the setup by launching an interactive session with $DEFAULT_TEST_MODEL?"
+echo -e "${BLUE}This will download the model and start an interactive chat session${NC}"
+read -p "Launch interactive test? (y/N): " LAUNCH_INTERACTIVE
 
-if [[ ! "$TEST_SETUP" =~ ^[Nn] ]]; then
-    echo -e "${BLUE}Testing container access...${NC}"
-    
-    # Simple container test - just verify we can run basic commands
-    echo -e "${BLUE}Testing Ollama container functionality...${NC}"
-    if apptainer exec --nv --cleanenv \
-        --env OLLAMA_HOME=/root/.ollama \
-        -B "$OLLAMA_STORAGE:/root/.ollama" \
-        "$CONTAINER_PATH" ollama --version >/dev/null 2>&1; then
-        echo -e "${GREEN}✓ Container test successful!${NC}"
-        echo -e "${BLUE}Container is ready for use${NC}"
-    else
-        echo -e "${YELLOW}Container test had issues, but setup continues...${NC}"
-    fi
-    
-    echo -e "${BLUE}Note: Model downloading and testing will be done when you run the scripts${NC}"
-    echo -e "${BLUE}Use './ollama_interactive.sh $DEFAULT_TEST_MODEL' to test with the small model${NC}"
+RUN_INTERACTIVE=false
+if [[ "$LAUNCH_INTERACTIVE" =~ ^[Yy] ]]; then
+    RUN_INTERACTIVE=true
+    echo -e "${GREEN}Will launch interactive session after setup completes${NC}"
 else
-    echo -e "${BLUE}Skipped container test${NC}"
+    echo -e "${BLUE}You can test later with: ./ollama_interactive.sh $DEFAULT_TEST_MODEL${NC}"
 fi
 
 echo ""
@@ -315,10 +303,17 @@ echo ""
 echo -e "${YELLOW}Switching to your workspace directory...${NC}"
 cd "$WORKSPACE_PATH"
 
-# Use exec to replace the current shell process with a new one in the workspace
-echo -e "${GREEN}You are now in: $(pwd)${NC}"
-echo -e "${BLUE}Ready to run: ./ollama_interactive.sh $DEFAULT_TEST_MODEL${NC}"
-echo ""
-
-# Start a new shell in the workspace directory
-exec bash
+if [ "$RUN_INTERACTIVE" = true ]; then
+    echo -e "${GREEN}Launching interactive session with $DEFAULT_TEST_MODEL...${NC}"
+    echo -e "${BLUE}You are now in: $(pwd)${NC}"
+    echo ""
+    # Launch the interactive script directly
+    exec ./ollama_interactive.sh "$DEFAULT_TEST_MODEL"
+else
+    # Use exec to replace the current shell process with a new one in the workspace
+    echo -e "${GREEN}You are now in: $(pwd)${NC}"
+    echo -e "${BLUE}Ready to run: ./ollama_interactive.sh $DEFAULT_TEST_MODEL${NC}"
+    echo ""
+    # Start a new shell in the workspace directory
+    exec bash
+fi
