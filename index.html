@@ -318,6 +318,7 @@
             color: white;
             padding: 0.75rem 1rem;
             cursor: pointer;
+            -webkit-user-select: none;
             user-select: none;
             font-weight: 500;
             display: flex;
@@ -456,6 +457,7 @@
     /* Allow proper text sizing */
     html {
         -webkit-text-size-adjust: 100% !important;
+        text-size-adjust: 100% !important;
     }
     
     /* Fix header alignment - maintain USDA formatting requirements */
@@ -919,7 +921,7 @@
                     <div class="code-block">
                         <div class="code-header">
                             Module Loading Commands
-                            <button class="copy-btn" onclick="copyCode('module-load-code')">Copy</button>
+                            <button type="button" class="copy-btn" onclick="copyCode('module-load-code')">Copy</button>
                         </div>
                         <pre id="module-load-code"># Load Apptainer (required for running Ollama container)
 module load apptainer
@@ -943,7 +945,7 @@ module list</pre>
                     <div class="code-block">
                         <div class="code-header">
                             Recommended Directory Structure
-                            <button class="copy-btn" onclick="copyCode('dir-structure-code')">Copy</button>
+                            <button type="button" class="copy-btn" onclick="copyCode('dir-structure-code')">Copy</button>
                         </div>
                         <pre id="dir-structure-code">your-project-folder/
 ├── ollama_batch_automation.sh    # The main batch script
@@ -967,7 +969,7 @@ module list</pre>
                     <div class="code-block">
                         <div class="code-header">
                             Basic Syntax
-                            <button class="copy-btn" onclick="copyCode('basic-syntax-code')">Copy</button>
+                            <button type="button" class="copy-btn" onclick="copyCode('basic-syntax-code')">Copy</button>
                         </div>
                         <pre id="basic-syntax-code">./ollama_batch_automation.sh [model_name] [input_dir] [output_dir] [num_gpus] [ctx_size] [flags]</pre>
                     </div>
@@ -1027,7 +1029,7 @@ module list</pre>
                     <div class="code-block">
                         <div class="code-header">
                             Output Structure
-                            <button class="copy-btn" onclick="copyCode('output-structure-code')">Copy</button>
+                            <button type="button" class="copy-btn" onclick="copyCode('output-structure-code')">Copy</button>
                         </div>
                         <pre id="output-structure-code">results/
 └── batch_20250612_143022/           # Timestamped batch directory
@@ -1065,7 +1067,7 @@ module list</pre>
                             <div class="code-block">
                                 <div class="code-header">
                                     Variables to Modify (Lines 15-17)
-                                    <button class="copy-btn" onclick="copyCode('project-vars-code')">Copy</button>
+                                    <button type="button" class="copy-btn" onclick="copyCode('project-vars-code')">Copy</button>
                                 </div>
                                 <pre id="project-vars-code"># Configuration - adjust these as needed
 DEFAULT_MODEL="gemma3:27b"                    # Change to your preferred default model
@@ -1115,7 +1117,7 @@ PROJECT_NAME="lemay_diet_guthealth"           # ⚠️ CHANGE TO YOUR PROJECT NA
                     <div class="code-block">
                         <div class="code-header">
                             Interactive Script Usage
-                            <button class="copy-btn" onclick="copyCode('interactive-usage-code')">Copy</button>
+                            <button type="button" class="copy-btn" onclick="copyCode('interactive-usage-code')">Copy</button>
                         </div>
                         <pre id="interactive-usage-code"># Basic usage - uses defaults
 ./ollama_interactive.sh
@@ -1272,7 +1274,7 @@ PROJECT_NAME="lemay_diet_guthealth"           # ⚠️ CHANGE TO YOUR PROJECT NA
                             <div class="code-block">
                                 <div class="code-header">
                                     ollama_batch_automation.sh - Complete Source Code
-                                    <button class="copy-btn" onclick="copyCode('full-script-code')">Copy Full Script</button>
+                                    <button type="button" class="copy-btn" onclick="copyCode('full-script-code')">Copy Full Script</button>
                                 </div>
                                 <pre id="full-script-code" class="loading">Loading script from GitHub...</pre>
                             </div>
@@ -1294,7 +1296,7 @@ PROJECT_NAME="lemay_diet_guthealth"           # ⚠️ CHANGE TO YOUR PROJECT NA
                             <div class="code-block">
                                 <div class="code-header">
                                     ollama_interactive.sh - Complete Source Code
-                                    <button class="copy-btn" onclick="copyCode('interactive-script-code')">Copy Interactive Script</button>
+                                    <button type="button" class="copy-btn" onclick="copyCode('interactive-script-code')">Copy Interactive Script</button>
                                 </div>
                                 <pre id="interactive-script-code" class="loading">Loading script from GitHub...</pre>
                             </div>
