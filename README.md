@@ -23,7 +23,7 @@ Key features:
 
 ## Scripts
 
-- `atlas_setup.sh` - **New!** Complete automated setup script
+- `atlas_setup.sh` - Complete automated setup script
 - `scripts/ollama_batch_automation.sh` - Processes multiple prompt files automatically
 - `scripts/ollama_interactive.sh` - Interactive chat mode for testing
 
@@ -38,7 +38,7 @@ Key features:
 **Automated Setup (Recommended):**
 1. Clone this repository: `git clone https://github.com/RichardStoker-USDA/scinet-atlas-llm-toolkit.git`
 2. Run the setup script: `./atlas_setup.sh`
-3. Follow the prompts to configure your workspace and test the system
+3. Follow the prompts to configure your workspace
 
 **Manual Setup:**
 1. Read the <a href="https://richardstoker-usda.github.io/scinet-atlas-llm-toolkit/" target="_blank">complete manual</a>
@@ -48,7 +48,7 @@ Key features:
 
 ## Scripts
 
-- `atlas_setup.sh` - **New!** Complete automated setup script
+- `atlas_setup.sh` - Complete automated setup script
 - `scripts/ollama_batch_automation.sh` - Processes multiple prompt files automatically
 - `scripts/ollama_interactive.sh` - Interactive chat mode for testing
 
