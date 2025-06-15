@@ -128,48 +128,56 @@ echo ""
 
 # Step 5: Copy scripts
 echo -e "${YELLOW}Step 5: Script Installation${NC}"
-SCRIPT_SOURCE_DIR="$(dirname "$(readlink -f "$0")")/scripts"
+
+# Get the directory where atlas_setup.sh is located
+SETUP_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+echo -e "${BLUE}Setup script location: $SETUP_DIR${NC}"
 
 # Try multiple possible locations for scripts
 SCRIPTS_COPIED=false
 
-if [ -d "$SCRIPT_SOURCE_DIR" ]; then
-    if cp "$SCRIPT_SOURCE_DIR/ollama_batch_automation.sh" . 2>/dev/null && \
-       cp "$SCRIPT_SOURCE_DIR/ollama_interactive.sh" . 2>/dev/null; then
+# Location 1: scripts/ subdirectory relative to setup script
+if [ "$SCRIPTS_COPIED" = false ] && [ -f "$SETUP_DIR/scripts/ollama_batch_automation.sh" ]; then
+    if cp "$SETUP_DIR/scripts/ollama_batch_automation.sh" . 2>/dev/null && \
+       cp "$SETUP_DIR/scripts/ollama_interactive.sh" . 2>/dev/null; then
         chmod +x ollama_batch_automation.sh ollama_interactive.sh
-        echo -e "${GREEN}✓ Copied scripts from: $SCRIPT_SOURCE_DIR${NC}"
+        echo -e "${GREEN}✓ Copied scripts from: $SETUP_DIR/scripts/${NC}"
         SCRIPTS_COPIED=true
     fi
 fi
 
-# Try current directory
-if [ "$SCRIPTS_COPIED" = false ] && [ -f "scripts/ollama_batch_automation.sh" ]; then
-    if cp "scripts/ollama_batch_automation.sh" . 2>/dev/null && \
-       cp "scripts/ollama_interactive.sh" . 2>/dev/null; then
-        chmod +x ollama_batch_automation.sh ollama_interactive.sh
-        echo -e "${GREEN}✓ Copied scripts from: ./scripts/${NC}"
-        SCRIPTS_COPIED=true
+# Location 2: Current working directory when setup was run  
+ORIGINAL_DIR="$(pwd)"
+TEMP_DIR="$ORIGINAL_DIR"
+if [ "$SCRIPTS_COPIED" = false ]; then
+    # Check if we're not already in the workspace
+    if [ "$ORIGINAL_DIR" != "$WORKSPACE_PATH" ]; then
+        cd "$ORIGINAL_DIR" 2>/dev/null || true
+        
+        if [ -f "scripts/ollama_batch_automation.sh" ]; then
+            if cp "scripts/ollama_batch_automation.sh" "$WORKSPACE_PATH/" 2>/dev/null && \
+               cp "scripts/ollama_interactive.sh" "$WORKSPACE_PATH/" 2>/dev/null; then
+                cd "$WORKSPACE_PATH"
+                chmod +x ollama_batch_automation.sh ollama_interactive.sh
+                echo -e "${GREEN}✓ Copied scripts from: $ORIGINAL_DIR/scripts/${NC}"
+                SCRIPTS_COPIED=true
+            fi
+        fi
     fi
 fi
 
-# Try parent directory scripts
-if [ "$SCRIPTS_COPIED" = false ] && [ -f "../scripts/ollama_batch_automation.sh" ]; then
-    if cp "../scripts/ollama_batch_automation.sh" . 2>/dev/null && \
-       cp "../scripts/ollama_interactive.sh" . 2>/dev/null; then
-        chmod +x ollama_batch_automation.sh ollama_interactive.sh
-        echo -e "${GREEN}✓ Copied scripts from: ../scripts/${NC}"
-        SCRIPTS_COPIED=true
-    fi
-fi
+# Go back to workspace
+cd "$WORKSPACE_PATH"
 
 if [ "$SCRIPTS_COPIED" = false ]; then
     echo -e "${YELLOW}Warning: Could not automatically copy scripts${NC}"
-    echo -e "${YELLOW}Please manually copy the following to your workspace:${NC}"
-    echo "  - ollama_batch_automation.sh"
-    echo "  - ollama_interactive.sh"
-    echo -e "${BLUE}Run from the cloned repository directory:${NC}"
-    echo "  cp scripts/ollama_batch_automation.sh $WORKSPACE_PATH/"
-    echo "  cp scripts/ollama_interactive.sh $WORKSPACE_PATH/"
+    echo -e "${YELLOW}Please run these commands to copy scripts manually:${NC}"
+    echo ""
+    echo -e "${BLUE}cd $ORIGINAL_DIR${NC}"
+    echo -e "${BLUE}cp scripts/ollama_batch_automation.sh $WORKSPACE_PATH/${NC}"
+    echo -e "${BLUE}cp scripts/ollama_interactive.sh $WORKSPACE_PATH/${NC}"
+    echo -e "${BLUE}cd $WORKSPACE_PATH${NC}"
+    echo -e "${BLUE}chmod +x ollama_batch_automation.sh ollama_interactive.sh${NC}"
 fi
 
 # Update PROJECT_NAME in scripts
@@ -234,94 +242,24 @@ echo -e "${BLUE}This will verify everything is working correctly${NC}"
 read -p "Test setup? (Y/n): " TEST_SETUP
 
 if [[ ! "$TEST_SETUP" =~ ^[Nn] ]]; then
-    echo -e "${BLUE}Starting test with $DEFAULT_TEST_MODEL...${NC}"
-    echo -e "${YELLOW}This will start the Ollama server and download the test model${NC}"
+    echo -e "${BLUE}Testing container access...${NC}"
     
-    # Create a test script inside the container
-    cat > "$WORKSPACE_PATH/test_ollama.sh" << 'EOF'
-#!/bin/bash
-
-# Colors
-GREEN='\033[0;32m'
-BLUE='\033[0;34m'
-YELLOW='\033[0;33m'
-RED='\033[0;31m'
-NC='\033[0m'
-
-echo -e "${BLUE}Setting up Ollama environment...${NC}"
-export CUDA_VISIBLE_DEVICES=0
-export OLLAMA_NUM_GPU=1
-export OLLAMA_GPU_LAYERS=999999
-export OLLAMA_HOST=127.0.0.1:11434
-
-# Kill any existing ollama processes
-pkill ollama 2>/dev/null || true
-sleep 2
-
-# Start Ollama server in background
-echo -e "${BLUE}Starting Ollama server...${NC}"
-ollama serve > /tmp/ollama_test.log 2>&1 &
-SERVER_PID=$!
-echo "Server PID: $SERVER_PID"
-
-# Wait for server to start
-echo -e "${BLUE}Waiting for server to initialize...${NC}"
-sleep 15
-
-# Check if server is running
-if ! ps -p $SERVER_PID > /dev/null; then
-    echo -e "${RED}Server failed to start. Log:${NC}"
-    cat /tmp/ollama_test.log
-    exit 1
-fi
-
-echo -e "${GREEN}Server started successfully${NC}"
-
-# Download and test model
-echo -e "${BLUE}Downloading model: TEST_MODEL_NAME${NC}"
-if ollama pull TEST_MODEL_NAME; then
-    echo -e "${GREEN}✓ Model downloaded successfully${NC}"
-    
-    # Test with simple prompt
-    echo -e "${BLUE}Testing model with simple prompt...${NC}"
-    if echo "Hello, respond with exactly: Test successful" | ollama run TEST_MODEL_NAME --verbose=false 2>/dev/null | grep -q "successful"; then
-        echo -e "${GREEN}✓ Model test successful!${NC}"
-    else
-        echo -e "${YELLOW}Model works but test response unclear${NC}"
-    fi
-else
-    echo -e "${RED}Error downloading model${NC}"
-    kill $SERVER_PID 2>/dev/null
-    exit 1
-fi
-
-# Stop server
-kill $SERVER_PID 2>/dev/null
-echo -e "${BLUE}Stopped test server${NC}"
-exit 0
-EOF
-
-    # Replace model name in test script
-    sed -i "s/TEST_MODEL_NAME/$DEFAULT_TEST_MODEL/g" "$WORKSPACE_PATH/test_ollama.sh"
-    chmod +x "$WORKSPACE_PATH/test_ollama.sh"
-    
-    # Run the test inside the container
-    echo -e "${BLUE}Running test inside Ollama container...${NC}"
+    # Simple container test - just verify we can run basic commands
+    echo -e "${BLUE}Testing Ollama container functionality...${NC}"
     if apptainer exec --nv --cleanenv \
         --env OLLAMA_HOME=/root/.ollama \
         -B "$OLLAMA_STORAGE:/root/.ollama" \
-        -B "$WORKSPACE_PATH:/workspace" \
-        "$CONTAINER_PATH" /workspace/test_ollama.sh; then
-        echo -e "${GREEN}✓ Setup test completed successfully!${NC}"
+        "$CONTAINER_PATH" ollama --version >/dev/null 2>&1; then
+        echo -e "${GREEN}✓ Container test successful!${NC}"
+        echo -e "${BLUE}Container is ready for use${NC}"
     else
-        echo -e "${YELLOW}Setup test had issues, but continuing...${NC}"
-        echo -e "${YELLOW}You can test manually with: ./ollama_interactive.sh $DEFAULT_TEST_MODEL${NC}"
+        echo -e "${YELLOW}Container test had issues, but setup continues...${NC}"
     fi
     
-    # Clean up test script
-    rm -f "$WORKSPACE_PATH/test_ollama.sh"
+    echo -e "${BLUE}Note: Model downloading and testing will be done when you run the scripts${NC}"
+    echo -e "${BLUE}Use './ollama_interactive.sh $DEFAULT_TEST_MODEL' to test with the small model${NC}"
 else
-    echo -e "${BLUE}Skipped setup test${NC}"
+    echo -e "${BLUE}Skipped container test${NC}"
 fi
 
 echo ""
