@@ -6,7 +6,7 @@ Automation toolkit for running Large Language Models on USDA SCINet Atlas HPC cl
 
 **View the complete user manual for detailed setup instructions and usage examples:**
 
-**[Complete Manual](https://richardstoker-usda.github.io/scinet-atlas-llm-toolkit/)**
+**<a href="https://richardstoker-usda.github.io/scinet-atlas-llm-toolkit/" target="_blank">Complete Manual</a>**
 
 The manual covers everything you need including setup, troubleshooting, model recommendations, and complete script documentation.
 
@@ -34,7 +34,7 @@ Key features:
 
 ## Getting Started
 
-1. Read the complete manual: https://richardstoker-usda.github.io/scinet-atlas-llm-toolkit/
+1. Read the <a href="https://richardstoker-usda.github.io/scinet-atlas-llm-toolkit/" target="_blank">complete manual</a>
 2. Download the scripts from the `scripts/` directory  
 3. Update the `PROJECT_NAME` variable in both scripts to match your Atlas project
 4. Follow the detailed setup instructions in the manual
