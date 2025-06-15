@@ -812,7 +812,7 @@
                                 <td>70B parameters</td>
                                 <td>1 GPU</td>
                                 <td>~60-70 GB</td>
-                                <td>llama3.1:70b</td>
+                                <td>llama3.3:70b</td>
                             </tr>
                             <tr>
                                 <td>Small MoE</td>
@@ -1090,10 +1090,10 @@ echo "Setup complete! Ready for LLM batch processing."</pre>
                             Sample Command
                             <button type="button" class="copy-btn" onclick="copyCode('sample-command-code')">Copy</button>
                         </div>
-                        <pre id="sample-command-code">./ollama_batch_automation.sh llama3:70b-instruct-q8_0 ./input_prompts ./results 6 131072 -s</pre>
+                        <pre id="sample-command-code">./ollama_batch_automation.sh llama3.3:70b-instruct-q8_0 ./input_prompts ./results 6 131072 -s</pre>
                     </div>
                     
-                    <p>This command runs the Llama 3 70B model with 6 GPUs, 128k context window, and skips confirmation prompts.</p>
+                    <p>This command runs the Llama 3.3 70B model with 6 GPUs, 128k context window, and skips confirmation prompts.</p>
                     
                     <h3>6.2. Parameters Explained</h3>
                     <table class="parameter-table">
@@ -1110,7 +1110,7 @@ echo "Setup complete! Ready for LLM batch processing."</pre>
                                 <td><code>model_name</code></td>
                                 <td>gemma3:27b</td>
                                 <td>Ollama model to use</td>
-                                <td>llama3.1:70b, llama4:scout, r1-1776</td>
+                                <td>llama3.3:70b, llama4:scout, r1-1776</td>
                             </tr>
                             <tr>
                                 <td><code>input_dir</code></td>
@@ -1290,7 +1290,7 @@ PROJECT_NAME="lemay_diet_guthealth"           # ⚠️ CHANGE TO YOUR PROJECT NA
                             <tr>
                                 <td><code>ollama show model_name</code></td>
                                 <td>Display model information</td>
-                                <td><code>ollama show llama3.1:70b</code></td>
+                                <td><code>ollama show llama3.3:70b</code></td>
                             </tr>
                             <tr>
                                 <td><code>/bye</code></td>
