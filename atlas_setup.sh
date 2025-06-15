@@ -310,3 +310,15 @@ fi
 echo ""
 echo -e "${GREEN}Your SCINet Atlas LLM Toolkit is ready to use!${NC}"
 echo -e "${BLUE}For help and documentation: https://github.com/RichardStoker-USDA/scinet-atlas-llm-toolkit${NC}"
+
+echo ""
+echo -e "${YELLOW}Switching to your workspace directory...${NC}"
+cd "$WORKSPACE_PATH"
+
+# Use exec to replace the current shell process with a new one in the workspace
+echo -e "${GREEN}You are now in: $(pwd)${NC}"
+echo -e "${BLUE}Ready to run: ./ollama_interactive.sh $DEFAULT_TEST_MODEL${NC}"
+echo ""
+
+# Start a new shell in the workspace directory
+exec bash
