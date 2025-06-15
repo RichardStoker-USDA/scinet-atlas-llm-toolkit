@@ -966,11 +966,11 @@ nvtop</pre>
                     </div>
                     
                     <h4>Quick Setup Script</h4>
-                    <p>Use this script to automatically create the complete directory structure with test prompts about USDA Agricultural Research Service (ARS). You can modify the test prompts or delete the synthesis question if not needed:</p>
+                    <p>Use this script to automatically create the complete directory structure with test prompts based on ARS Davis research units. You can modify the test prompts or delete the synthesis question if not needed:</p>
                     
                     <div class="collapsible">
                         <div class="collapsible-header" onclick="toggleCollapsible(this)">
-                            <span>Setup Script with ARS Test Data</span>
+                            <span>Setup Script with ARS Davis Research Examples</span>
                             <span class="collapsible-icon">▼</span>
                         </div>
                         <div class="collapsible-content">
@@ -981,51 +981,51 @@ nvtop</pre>
                                 </div>
                                 <pre id="setup-script-code">#!/bin/bash
 # Quick setup script for SCINet Atlas LLM Toolkit
-# Creates directory structure and sample ARS prompts
+# Creates directory structure and sample ARS Davis research prompts
 
 echo "Setting up SCINet Atlas LLM Toolkit directory structure..."
 
 # Create main directories
 mkdir -p input_prompts results
 
-echo "Creating sample ARS research prompts..."
+echo "Creating sample ARS Davis research prompts..."
 
-# Sample prompt 1: ARS Research Overview
-cat > input_prompts/ars_research_overview.txt << 'EOF'
-Provide a comprehensive overview of the USDA Agricultural Research Service (ARS) including its mission, key research areas, and impact on American agriculture. Focus on recent innovations and breakthroughs that have benefited farmers and consumers.
+# Sample prompt 1: Human Nutrition Research
+cat > input_prompts/nutrition_genomics_research.txt << 'EOF'
+Analyze the Western Human Nutrition Research Center's contributions to understanding nutrigenomics and metabolic health. Focus on how genetic variations influence individual responses to dietary interventions and the development of personalized nutrition approaches for obesity prevention and metabolic wellness.
 EOF
 
-# Sample prompt 2: ARS Sustainability Research
-cat > input_prompts/ars_sustainability_research.txt << 'EOF'
-Describe the Agricultural Research Service's contributions to sustainable agriculture practices. Include specific research programs, methodologies, and findings that promote environmental stewardship while maintaining agricultural productivity.
+# Sample prompt 2: Agricultural Technology Innovation
+cat > input_prompts/precision_agriculture_technology.txt << 'EOF'
+Examine ARS Davis research in precision agriculture technologies, including hyperspectral drone imaging for canopy cover assessment, automated irrigation optimization systems, and machine learning models for crop health monitoring. Discuss how these technologies improve resource efficiency and yield optimization.
 EOF
 
-# Sample prompt 3: ARS Climate Research
-cat > input_prompts/ars_climate_adaptation.txt << 'EOF'
-Analyze the role of USDA-ARS in developing climate-resilient agricultural systems. Discuss specific research initiatives, crop varieties, and farming practices developed to help agriculture adapt to changing climate conditions.
+# Sample prompt 3: Germplasm Conservation Research
+cat > input_prompts/germplasm_preservation_research.txt << 'EOF'
+Describe the National Clonal Germplasm Repository's work in preserving genetic resources of tree fruits, nuts, and grapes. Include specific methodologies for collection, evaluation, and distribution of plant genetic materials, and the importance of genetic variation for crop improvement and food security.
 EOF
 
-# Sample prompt 4: ARS Technology Innovation
-cat > input_prompts/ars_technology_innovation.txt << 'EOF'
-Examine the Agricultural Research Service's leadership in agricultural technology innovation, including precision agriculture, biotechnology applications, and digital farming tools that enhance productivity and efficiency.
+# Sample prompt 4: Plant Pathology Research
+cat > input_prompts/plant_pathology_research.txt << 'EOF'
+Investigate the Crops Pathology and Genetics Research Unit's advances in plant disease management, particularly in grape and fruit crop protection. Focus on integrated pest management approaches, disease-resistant variety development, and molecular diagnostic tools for early pathogen detection.
 EOF
 
 # Synthesis question for meta-analysis
 cat > input_prompts/synthesis_question.txt << 'EOF'
-Based on the comprehensive analysis of USDA-ARS research across multiple domains, synthesize the key themes and provide recommendations for how ARS research priorities should evolve to address future agricultural challenges while building on current strengths and innovations.
+Based on the analysis of ARS Davis research across nutrition science, agricultural technology, germplasm conservation, and plant health, synthesize the interconnected approaches and identify how these research areas complement each other to advance agricultural productivity and human health outcomes.
 EOF
 
 echo "Directory structure created successfully!"
 echo ""
 echo "Created directories:"
-echo "  input_prompts/ - Contains 4 sample ARS research prompts"
+echo "  input_prompts/ - Contains 4 sample ARS Davis research prompts"
 echo "  results/ - Ready for batch processing outputs"
 echo ""
 echo "Sample files created:"
-echo "  ars_research_overview.txt"
-echo "  ars_sustainability_research.txt"
-echo "  ars_climate_adaptation.txt"
-echo "  ars_technology_innovation.txt"
+echo "  nutrition_genomics_research.txt"
+echo "  precision_agriculture_technology.txt"
+echo "  germplasm_preservation_research.txt"
+echo "  plant_pathology_research.txt"
 echo "  synthesis_question.txt (optional - delete if not using synthesis mode)"
 echo ""
 echo "Next steps:"
