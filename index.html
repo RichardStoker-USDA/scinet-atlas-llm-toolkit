@@ -993,7 +993,7 @@ nvtop</pre>
                     </div>
                     
                     <h4>Quick Setup Script</h4>
-                    <p>Use this script to automatically create the complete directory structure with test prompts based on ARS Davis research units. You can modify the test prompts or delete the synthesis question if not needed:</p>
+                    <p>Use this script to automatically create the complete directory structure with test prompts based on ARS Davis research units. The script will prompt you for your project name and create a personalized workspace. You can modify the test prompts or delete the synthesis question if not needed:</p>
                     
                     <div class="collapsible">
                         <div class="collapsible-header" onclick="toggleCollapsible(this)">
@@ -1008,9 +1008,49 @@ nvtop</pre>
                                 </div>
                                 <pre id="setup-script-code">#!/bin/bash
 # Quick setup script for SCINet Atlas LLM Toolkit
-# Creates directory structure and sample ARS Davis research prompts
+# Creates project workspace and sample ARS Davis research prompts
 
-echo "Setting up SCINet Atlas LLM Toolkit directory structure..."
+echo "=== SCINet Atlas LLM Toolkit Setup ==="
+echo "This script will create your personalized LLM project workspace."
+echo ""
+
+# Get user's project name
+echo "Please enter your SCINet project name (e.g., smith_plantgenomics):"
+read -p "Project name: " PROJECT_NAME
+
+# Validate project exists
+PROJECT_PATH="/90daydata/$PROJECT_NAME"
+if [ ! -d "$PROJECT_PATH" ]; then
+    echo "Error: Project directory $PROJECT_PATH does not exist."
+    echo "Please check your project name or contact SCINet support."
+    exit 1
+fi
+
+echo "Found project directory: $PROJECT_PATH"
+
+# Get current username
+USERNAME=$(whoami)
+WORKSPACE_NAME="${USERNAME}_llm_project"
+WORKSPACE_PATH="$PROJECT_PATH/$WORKSPACE_NAME"
+
+echo "Creating workspace: $WORKSPACE_NAME"
+
+# Create user workspace directory
+if [ -d "$WORKSPACE_PATH" ]; then
+    echo "Warning: Workspace $WORKSPACE_PATH already exists."
+    echo "Do you want to continue and potentially overwrite files? (y/n)"
+    read -p "Continue? " -n 1 -r
+    echo ""
+    if [[ ! $REPLY =~ ^[Yy]$ ]]; then
+        echo "Setup cancelled."
+        exit 1
+    fi
+fi
+
+mkdir -p "$WORKSPACE_PATH"
+cd "$WORKSPACE_PATH"
+
+echo "Creating directory structure in $WORKSPACE_PATH..."
 
 # Create main directories
 mkdir -p input_prompts results
@@ -1042,7 +1082,10 @@ cat > input_prompts/synthesis_question.txt << 'EOF'
 Based on the analysis of ARS Davis research across nutrition science, agricultural technology, germplasm conservation, and plant health, synthesize the interconnected approaches and identify how these research areas complement each other to advance agricultural productivity and human health outcomes.
 EOF
 
-echo "Directory structure created successfully!"
+echo ""
+echo "=== Setup Complete! ==="
+echo ""
+echo "Workspace created at: $WORKSPACE_PATH"
 echo ""
 echo "Created directories:"
 echo "  input_prompts/ - Contains 4 sample ARS Davis research prompts"
@@ -1056,13 +1099,16 @@ echo "  plant_pathology_research.txt"
 echo "  synthesis_question.txt (optional - delete if not using synthesis mode)"
 echo ""
 echo "Next steps:"
-echo "1. Update PROJECT_NAME variable in batch script to your SCINet project"
-echo "2. Modify the sample prompts for your specific research needs"
-echo "3. Run: ./ollama_batch_automation.sh [model] ./input_prompts ./results [gpus] [context_size]"
+echo "1. Navigate to your workspace: cd $WORKSPACE_PATH"
+echo "2. Copy the batch scripts to this directory"
+echo "3. Update PROJECT_NAME variable in batch script to: $PROJECT_NAME"
+echo "4. Modify the sample prompts for your specific research needs"
+echo "5. Run: ./ollama_batch_automation.sh [model] ./input_prompts ./results [gpus] [context_size]"
 echo ""
-echo "Setup complete! Ready for LLM batch processing."</pre>
+echo "Your personalized LLM workspace is ready!"
+echo "Current location: $(pwd)"</pre>
                             </div>
-                            <p><strong>Usage:</strong> Save this script as <code>setup_directory.sh</code>, make it executable with <code>chmod +x setup_directory.sh</code>, then run <code>./setup_directory.sh</code> to create the complete structure with test prompts. You can then modify the prompts for your research or delete <code>synthesis_question.txt</code> if you don't need synthesis mode.</p>
+                            <p><strong>Usage:</strong> Save this script as <code>setup_directory.sh</code>, make it executable with <code>chmod +x setup_directory.sh</code>, then run <code>./setup_directory.sh</code>. The script will prompt you for your SCINet project name, validate it exists under <code>/90daydata/</code>, create a personalized workspace named <code>[username]_llm_project</code>, and guide you to the new directory with all sample prompts ready for use.</p>
                         </div>
                     </div>
                     
