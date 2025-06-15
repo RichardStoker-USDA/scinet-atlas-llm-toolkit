@@ -17,6 +17,9 @@ NC='\033[0m' # No Color
 DEFAULT_TEST_MODEL="gemma3:1b"
 SESSION_USER=$(whoami)
 
+# Store the original directory where the setup script was run from
+ORIGINAL_REPO_DIR="$(pwd)"
+
 echo -e "${BLUE}===============================================${NC}"
 echo -e "${BLUE}  SCINet Atlas LLM Toolkit - Complete Setup  ${NC}"
 echo -e "${BLUE}===============================================${NC}"
@@ -128,33 +131,34 @@ echo ""
 # Step 5: Copy scripts
 echo -e "${YELLOW}Step 5: Script Installation${NC}"
 
-# Get the directory where atlas_setup.sh is located (the repo directory)
-SETUP_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-echo -e "${BLUE}Repository location: $SETUP_DIR${NC}"
+echo -e "${BLUE}Looking for scripts in: $ORIGINAL_REPO_DIR/scripts/${NC}"
 
-# Copy scripts from repository to workspace
+# Copy scripts from original repository location to workspace
 SCRIPTS_COPIED=false
 
-if [ -f "$SETUP_DIR/scripts/ollama_batch_automation.sh" ] && [ -f "$SETUP_DIR/scripts/ollama_interactive.sh" ]; then
+if [ -f "$ORIGINAL_REPO_DIR/scripts/ollama_batch_automation.sh" ] && [ -f "$ORIGINAL_REPO_DIR/scripts/ollama_interactive.sh" ]; then
     echo -e "${BLUE}Copying scripts to workspace...${NC}"
-    if cp "$SETUP_DIR/scripts/ollama_batch_automation.sh" "$WORKSPACE_PATH/" && \
-       cp "$SETUP_DIR/scripts/ollama_interactive.sh" "$WORKSPACE_PATH/"; then
+    if cp "$ORIGINAL_REPO_DIR/scripts/ollama_batch_automation.sh" "$WORKSPACE_PATH/" && \
+       cp "$ORIGINAL_REPO_DIR/scripts/ollama_interactive.sh" "$WORKSPACE_PATH/"; then
         chmod +x "$WORKSPACE_PATH/ollama_batch_automation.sh" "$WORKSPACE_PATH/ollama_interactive.sh"
-        echo -e "${GREEN}✓ Successfully copied scripts from: $SETUP_DIR/scripts/${NC}"
+        echo -e "${GREEN}✓ Successfully copied scripts from: $ORIGINAL_REPO_DIR/scripts/${NC}"
         SCRIPTS_COPIED=true
     else
         echo -e "${RED}Failed to copy scripts${NC}"
     fi
 else
-    echo -e "${YELLOW}Scripts not found in $SETUP_DIR/scripts/${NC}"
+    echo -e "${YELLOW}Scripts not found in $ORIGINAL_REPO_DIR/scripts/${NC}"
+    echo -e "${BLUE}Original directory: $ORIGINAL_REPO_DIR${NC}"
+    echo -e "${BLUE}Looking for: $ORIGINAL_REPO_DIR/scripts/ollama_batch_automation.sh${NC}"
+    echo -e "${BLUE}Looking for: $ORIGINAL_REPO_DIR/scripts/ollama_interactive.sh${NC}"
 fi
 
 if [ "$SCRIPTS_COPIED" = false ]; then
     echo -e "${YELLOW}Warning: Could not automatically copy scripts${NC}"
     echo -e "${YELLOW}Please run these commands to copy scripts manually:${NC}"
     echo ""
-    echo -e "${BLUE}cp $SETUP_DIR/scripts/ollama_batch_automation.sh $WORKSPACE_PATH/${NC}"
-    echo -e "${BLUE}cp $SETUP_DIR/scripts/ollama_interactive.sh $WORKSPACE_PATH/${NC}"
+    echo -e "${BLUE}cp $ORIGINAL_REPO_DIR/scripts/ollama_batch_automation.sh $WORKSPACE_PATH/${NC}"
+    echo -e "${BLUE}cp $ORIGINAL_REPO_DIR/scripts/ollama_interactive.sh $WORKSPACE_PATH/${NC}"
     echo -e "${BLUE}cd $WORKSPACE_PATH${NC}"
     echo -e "${BLUE}chmod +x ollama_batch_automation.sh ollama_interactive.sh${NC}"
 fi
