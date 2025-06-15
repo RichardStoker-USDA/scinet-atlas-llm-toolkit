@@ -704,14 +704,15 @@
                         <li><a href="#core-concepts">2. Core Concepts</a></li>
                         <li><a href="#resource-planning">3. Resource Planning</a></li>
                         <li><a href="#atlas-setup">4. Atlas Environment Setup</a></li>
-                        <li><a href="#directory-setup">5. Directory & Prompt Setup</a></li>
-                        <li><a href="#script-usage">6. Running the Script</a></li>
-                        <li><a href="#understanding-output">7. Understanding Output</a></li>
-                        <li><a href="#customization">8. Script Customization</a></li>
-                        <li><a href="#interactive-session">9. Interactive Session Mode</a></li>
-                        <li><a href="#troubleshooting">10. Troubleshooting</a></li>
-                        <li><a href="#full-script">11. Full Batch Script Source</a></li>
-                        <li><a href="#interactive-script">12. Interactive Script Source</a></li>
+                        <li><a href="#automated-setup">5. Automated Setup Script</a></li>
+                        <li><a href="#directory-setup">6. Directory & Prompt Setup</a></li>
+                        <li><a href="#script-usage">7. Running the Script</a></li>
+                        <li><a href="#understanding-output">8. Understanding Output</a></li>
+                        <li><a href="#customization">9. Script Customization</a></li>
+                        <li><a href="#interactive-session">10. Interactive Session Mode</a></li>
+                        <li><a href="#troubleshooting">11. Troubleshooting</a></li>
+                        <li><a href="#full-script">12. Full Batch Script Source</a></li>
+                        <li><a href="#interactive-script">13. Interactive Script Source</a></li>
                     </ul>
                 </div>
             </nav>
@@ -970,11 +971,153 @@ nvtop</pre>
                     </div>
                 </section>
                 
-                <!-- Section 5: Directory Setup -->
-                <section id="directory-setup" class="section">
-                    <h2>5. Directory & Prompt Preparation</h2>
+                <!-- Section 5: Automated Setup Script -->
+                <section id="automated-setup" class="section">
+                    <h2>5. Automated Setup Script</h2>
                     
-                    <h3>5.1. Project Directory Structure</h3>
+                    <h3>5.1. Using the Setup Script (Recommended)</h3>
+                    <p>The toolkit includes an automated setup script (<code>atlas_setup.sh</code>) that streamlines the entire configuration process. This script handles project validation, workspace creation, script installation, and optional testing.</p>
+                    
+                    <div class="alert alert-info">
+                        <strong>Quick Start:</strong> Clone the repository and run <code>./atlas_setup.sh</code> to automatically configure your workspace and get started immediately.
+                    </div>
+                    
+                    <h4><span class="step-counter">1</span>Clone the Repository</h4>
+                    <div class="code-block">
+                        <div class="code-header">
+                            <span class="code-title">Clone SCINet Atlas LLM Toolkit</span>
+                            <button type="button" class="copy-btn" onclick="copyCode('clone-repo-code')">Copy</button>
+                        </div>
+                        <pre id="clone-repo-code"><code>git clone https://github.com/RichardStoker-USDA/scinet-atlas-llm-toolkit.git
+cd scinet-atlas-llm-toolkit</code></pre>
+                    </div>
+                    
+                    <h4><span class="step-counter">2</span>Run the Setup Script</h4>
+                    <div class="code-block">
+                        <div class="code-header">
+                            <span class="code-title">Execute Automated Setup</span>
+                            <button type="button" class="copy-btn" onclick="copyCode('run-setup-code')">Copy</button>
+                        </div>
+                        <pre id="run-setup-code"><code>./atlas_setup.sh</code></pre>
+                    </div>
+                    
+                    <h3>5.2. Setup Script Features</h3>
+                    <p>The automated setup script performs the following operations:</p>
+                    
+                    <div class="feature-grid">
+                        <div class="feature-card">
+                            <h4>🔍 Project Validation</h4>
+                            <p>Validates your SCINet project name and verifies write permissions to the project directory.</p>
+                        </div>
+                        <div class="feature-card">
+                            <h4>📁 Workspace Creation</h4>
+                            <p>Creates a personalized workspace directory with proper structure for your LLM projects.</p>
+                        </div>
+                        <div class="feature-card">
+                            <h4>📄 Sample Content</h4>
+                            <p>Optionally creates sample ARS research prompts and synthesis questions for immediate testing.</p>
+                        </div>
+                        <div class="feature-card">
+                            <h4>⚙️ Script Installation</h4>
+                            <p>Copies and configures both batch automation and interactive scripts with your project settings.</p>
+                        </div>
+                        <div class="feature-card">
+                            <h4>🐳 Container Setup</h4>
+                            <p>Downloads and configures the Ollama container for GPU-accelerated model serving.</p>
+                        </div>
+                        <div class="feature-card">
+                            <h4>🧪 Optional Testing</h4>
+                            <p>Offers to launch an interactive session to immediately test your setup with a small model.</p>
+                        </div>
+                    </div>
+                    
+                    <h3>5.3. Setup Process Walkthrough</h3>
+                    <p>The setup script guides you through several interactive prompts:</p>
+                    
+                    <div class="setup-steps">
+                        <div class="setup-step">
+                            <h4>Step 1: Project Name</h4>
+                            <p>Enter your SCINet main project name (e.g., <code>smith_plantgenomics</code>). The script validates this exists and you have write access.</p>
+                        </div>
+                        
+                        <div class="setup-step">
+                            <h4>Step 2: Workspace Directory</h4>
+                            <p>Choose a workspace name or accept the default (<code>username_llm_project</code>). This creates your working directory within the project space.</p>
+                        </div>
+                        
+                        <div class="setup-step">
+                            <h4>Step 3: Sample Content</h4>
+                            <p>Decide whether to create sample ARS research prompts covering nutrition science, agricultural technology, germplasm preservation, and plant pathology.</p>
+                        </div>
+                        
+                        <div class="setup-step">
+                            <h4>Step 4: Testing Option</h4>
+                            <p>Choose whether to immediately test your setup by launching an interactive session with a small model (gemma3:1b).</p>
+                        </div>
+                    </div>
+                    
+                    <h3>5.4. Module Loading and GPU Monitoring</h3>
+                    <p>The setup script automatically handles module loading, but for manual operations or GPU monitoring, note the following:</p>
+                    
+                    <div class="alert alert-success">
+                        <strong>Auto-loaded by scripts:</strong> Both batch and interactive scripts automatically run <code>module load cuda cudnn apptainer</code> so you don't need to load these manually.
+                    </div>
+                    
+                    <h4>Optional: GPU Monitoring with nvtop</h4>
+                    <p>For real-time GPU monitoring during model loading and inference, you can use nvtop in a separate terminal window:</p>
+                    
+                    <div class="code-block">
+                        <div class="code-header">
+                            <span class="code-title">GPU Monitoring Setup</span>
+                            <button type="button" class="copy-btn" onclick="copyCode('nvtop-code')">Copy</button>
+                        </div>
+                        <pre id="nvtop-code"><code># Open a new Xterm window (File → Open Terminal)
+module load nvtop
+
+# Launch real-time GPU monitoring
+nvtop</code></pre>
+                    </div>
+                    
+                    <div class="alert alert-info">
+                        <strong>Using nvtop:</strong> Open nvtop in a separate Xterm window to monitor GPU usage and verify that models load to GPU memory rather than system RAM. This helps ensure optimal performance and identify potential VRAM issues.
+                    </div>
+                    
+                    <div class="alert alert-warning">
+                        <strong>Module versions:</strong> Module versions may change over time. If you encounter issues, check available versions with <code>module avail apptainer</code> or <code>module avail cuda</code> and update the script's module loading section accordingly.
+                    </div>
+                    
+                    <h3>5.5. After Setup Completion</h3>
+                    <p>Once the setup script completes, you'll be placed in your workspace directory with:</p>
+                    
+                    <ul>
+                        <li><strong>Scripts ready to use:</strong> <code>ollama_batch_automation.sh</code> and <code>ollama_interactive.sh</code></li>
+                        <li><strong>Directory structure:</strong> <code>input_prompts/</code> and <code>results/</code> folders</li>
+                        <li><strong>Sample content:</strong> Research prompts ready for testing (if selected)</li>
+                        <li><strong>Container downloaded:</strong> Ollama container ready for model serving</li>
+                        <li><strong>Project configured:</strong> Scripts updated with your project name</li>
+                    </ul>
+                    
+                    <div class="code-block">
+                        <div class="code-header">
+                            <span class="code-title">Quick Start Commands</span>
+                            <button type="button" class="copy-btn" onclick="copyCode('quick-start-code')">Copy</button>
+                        </div>
+                        <pre id="quick-start-code"><code># Test with default context (uses Ollama's default ~2k-8k tokens)
+./ollama_interactive.sh gemma3:1b
+
+# Test with custom context (creates custom model)
+./ollama_interactive.sh gemma3:1b auto 16384
+
+# Run batch processing
+./ollama_batch_automation.sh gemma3:1b ./input_prompts ./results 1 8192 -s</code></pre>
+                    </div>
+                </section>
+                
+                <!-- Section 6: Directory Setup -->
+                <section id="directory-setup" class="section">
+                    <h2>6. Directory & Prompt Preparation</h2>
+                    
+                    <h3>6.1. Project Directory Structure</h3>
                     <p>The script expects a specific directory structure for optimal organization and functionality:</p>
                     
                     <div class="code-block">
@@ -1119,7 +1262,7 @@ echo "Current location: $(pwd)"</pre>
                         </div>
                     </div>
                     
-                    <h3>5.2. Synthesis Mode</h3>
+                    <h3>6.2. Synthesis Mode</h3>
                     <p><strong>Synthesis mode</strong> is an advanced feature that performs meta-analysis across all your prompt results. Here's how it works:</p>
                     
                     <h4>How Synthesis Works:</h4>
@@ -1147,11 +1290,11 @@ echo "Current location: $(pwd)"</pre>
                     </div>
                 </section>
                 
-                <!-- Section 6: Script Usage -->
+                <!-- Section 7: Script Usage -->
                 <section id="script-usage" class="section">
-                    <h2>6. Running the Script</h2>
+                    <h2>7. Running the Script</h2>
                     
-                    <h3>6.1. Basic Usage</h3>
+                    <h3>7.1. Basic Usage</h3>
                     <p>The script can be run with various parameters to customize its behavior:</p>
                     
                     <div class="code-block">
@@ -1175,7 +1318,7 @@ echo "Current location: $(pwd)"</pre>
                     
                     <p>This command runs the Llama 3.3 70B model with 6 GPUs, 128k context window, and skips confirmation prompts.</p>
                     
-                    <h3>6.2. Parameters Explained</h3>
+                    <h3>7.2. Parameters Explained</h3>
                     <table class="parameter-table">
                         <thead>
                             <tr>
@@ -1220,11 +1363,11 @@ echo "Current location: $(pwd)"</pre>
                     </table>
                 </section>
                 
-                <!-- Section 7: Understanding Output -->
+                <!-- Section 8: Understanding Output -->
                 <section id="understanding-output" class="section">
-                    <h2>7. Understanding the Output</h2>
+                    <h2>8. Understanding the Output</h2>
                     
-                    <h3>7.1. Output Directory Structure</h3>
+                    <h3>8.1. Output Directory Structure</h3>
                     <p>The script creates a timestamped batch directory with organized subdirectories:</p>
                     
                     <div class="code-block">
@@ -1250,11 +1393,11 @@ echo "Current location: $(pwd)"</pre>
                     </div>
                 </section>
                 
-                <!-- Section 8: Customization -->
+                <!-- Section 9: Customization -->
                 <section id="customization" class="section">
-                    <h2>8. Script Customization</h2>
+                    <h2>9. Script Customization</h2>
                     
-                    <h3>8.1. Adapting for Different Projects</h3>
+                    <h3>9.1. Adapting for Different Projects</h3>
                     <p>Understanding SCINet project structure is crucial for proper setup:</p>
                     
                     <div class="alert alert-info">
@@ -1295,11 +1438,11 @@ PROJECT_NAME="lemay_diet_guthealth"           # ⚠️ CHANGE TO YOUR PROJECT NA
                     </div>
                 </section>
 
-                <!-- Section 9: Interactive Session Mode -->
+                <!-- Section 10: Interactive Session Mode -->
                 <section id="interactive-session" class="section">
-                    <h2>9. Interactive Session Mode</h2>
+                    <h2>10. Interactive Session Mode</h2>
                     
-                    <h3>9.1. What is Interactive Mode?</h3>
+                    <h3>10.1. What is Interactive Mode?</h3>
                     <p>The <strong>Interactive Session Mode</strong> provides real-time conversation capabilities with Large Language Models through a terminal interface. Unlike batch processing, this mode allows for:</p>
                     
                     <ul>
@@ -1313,7 +1456,7 @@ PROJECT_NAME="lemay_diet_guthealth"           # ⚠️ CHANGE TO YOUR PROJECT NA
                         <strong>When to Use Interactive Mode:</strong> Ideal for exploratory research, prompt testing, debugging model behavior, educational demonstrations, and scenarios where you need immediate responses rather than batch processing multiple files.
                     </div>
                     
-                    <h3>9.2. How Interactive Mode Works</h3>
+                    <h3>10.2. How Interactive Mode Works</h3>
                     <p>The interactive script sets up a complete Ollama environment with your specified model and launches a terminal-based chat interface. The conversation happens in real-time with streaming text output, similar to ChatGPT but running locally on Atlas hardware.</p>
                     
                     <h4>Key Features:</h4>
@@ -1325,7 +1468,7 @@ PROJECT_NAME="lemay_diet_guthealth"           # ⚠️ CHANGE TO YOUR PROJECT NA
                         <li><strong>Model Flexibility:</strong> Works with any Ollama-compatible model</li>
                     </ul>
                     
-                    <h3>9.3. Running Interactive Sessions</h3>
+                    <h3>10.3. Running Interactive Sessions</h3>
                     
                     <div class="code-block">
                         <div class="code-header">
@@ -1345,7 +1488,7 @@ PROJECT_NAME="lemay_diet_guthealth"           # ⚠️ CHANGE TO YOUR PROJECT NA
 ./ollama_interactive.sh llama4:17b-scout-16e-instruct-q8_0 6 65536 -s</pre>
                     </div>
                     
-                    <h3>9.4. Interactive Commands</h3>
+                    <h3>10.4. Interactive Commands</h3>
                     <p>Once the interactive session starts, you'll have access to several commands:</p>
                     
                     <table class="parameter-table">
@@ -1385,7 +1528,7 @@ PROJECT_NAME="lemay_diet_guthealth"           # ⚠️ CHANGE TO YOUR PROJECT NA
                         </tbody>
                     </table>
                     
-                    <h3>9.5. Use Cases for Interactive Mode</h3>
+                    <h3>10.5. Use Cases for Interactive Mode</h3>
                     
                     <div class="collapsible">
                         <div class="collapsible-header" onclick="toggleCollapsible(this)">
@@ -1417,11 +1560,11 @@ PROJECT_NAME="lemay_diet_guthealth"           # ⚠️ CHANGE TO YOUR PROJECT NA
                     </div>
                 </section>
                 
-                <!-- Section 10: Troubleshooting -->
+                <!-- Section 11: Troubleshooting -->
                 <section id="troubleshooting" class="section">
-                    <h2>10. Troubleshooting</h2>
+                    <h2>11. Troubleshooting</h2>
                     
-                    <h3>10.1. Common Issues and Solutions</h3>
+                    <h3>11.1. Common Issues and Solutions</h3>
                     
                     <div class="collapsible">
                         <div class="collapsible-header" onclick="toggleCollapsible(this)">
@@ -1461,7 +1604,7 @@ PROJECT_NAME="lemay_diet_guthealth"           # ⚠️ CHANGE TO YOUR PROJECT NA
                         </div>
                     </div>
                     
-                    <h3>10.2. Getting Help</h3>
+                    <h3>11.2. Getting Help</h3>
                     <div class="alert alert-success">
                         <strong>Support Resources:</strong>
                         <ul>
@@ -1473,9 +1616,9 @@ PROJECT_NAME="lemay_diet_guthealth"           # ⚠️ CHANGE TO YOUR PROJECT NA
                     </div>
                 </section>
                 
-                <!-- Section 11: Full Batch Script -->
+                <!-- Section 12: Full Batch Script -->
                 <section id="full-script" class="section">
-                    <h2>11. Full Batch Script Source Code</h2>
+                    <h2>12. Full Batch Script Source Code</h2>
                     <p>Below is the complete source code for the Ollama Batch Automation script. You can copy this entire script to use in your own projects.</p>
                     
                     <div class="collapsible">
@@ -1495,9 +1638,9 @@ PROJECT_NAME="lemay_diet_guthealth"           # ⚠️ CHANGE TO YOUR PROJECT NA
                     </div>
                 </section>
 
-                <!-- Section 12: Interactive Script -->
+                <!-- Section 13: Interactive Script -->
                 <section id="interactive-script" class="section">
-                    <h2>12. Interactive Script Source Code</h2>
+                    <h2>13. Interactive Script Source Code</h2>
                     <p>Below is the complete source code for the Ollama Interactive Session script. This script enables real-time chat with LLMs through a terminal interface on Atlas.</p>
                     
                     <div class="collapsible">

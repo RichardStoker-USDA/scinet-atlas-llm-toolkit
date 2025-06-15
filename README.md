@@ -46,12 +46,6 @@ Key features:
 3. Update the `PROJECT_NAME` variable in both scripts to match your Atlas project
 4. Follow the detailed setup instructions in the manual
 
-## Scripts
-
-- `atlas_setup.sh` - Complete automated setup script
-- `scripts/ollama_batch_automation.sh` - Processes multiple prompt files automatically
-- `scripts/ollama_interactive.sh` - Interactive chat mode for testing
-
 ## Contact
 
 Richard Stoker  
