@@ -17,7 +17,6 @@ NC='\033[0m' # No Color
 
 # Configuration - adjust these as needed
 DEFAULT_MODEL="gemma3:27b"
-DEFAULT_CONTEXT_SIZE=8192  # 8k tokens - safe default for most models
 PROJECT_NAME="lemay_diet_guthealth"
 
 # Initialize variables
@@ -26,6 +25,7 @@ NUM_GPUS=""
 CONTEXT_SIZE=""
 AUTO_RUN=false
 USER_SUBDIR=""
+CONTEXT_EXPLICITLY_SET=false
 
 # Function to show usage
 show_usage() {
@@ -40,7 +40,9 @@ show_usage() {
     echo -e "${YELLOW}Parameters:${NC}"
     echo "  model_name    - Ollama model name (default: $DEFAULT_MODEL)"
     echo "  num_gpus      - Number of GPUs to use (default: auto-detect)"
-    echo "  context_size  - Context window size in tokens (default: $DEFAULT_CONTEXT_SIZE)"
+    echo "  context_size  - Context window size in tokens (optional)"
+    echo "                  If not specified, uses Ollama's default for the model"
+    echo "                  If specified, creates custom model with that context size"
     echo ""
     echo -e "${YELLOW}Optional Flags:${NC}"
     echo "  -s, --skip         Skip all confirmations (auto-run mode)"
@@ -48,17 +50,20 @@ show_usage() {
     echo "  -h, --help         Show this help message"
     echo ""
     echo -e "${YELLOW}Examples:${NC}"
-    echo "  # Basic usage with default context"
+    echo "  # Basic usage with model's default context"
     echo "  $0 gemma3:1b 1"
     echo ""
-    echo -e "${YELLOW}  # Larger context window for complex tasks"
-    echo "  $0 llama3.3:70b 4 32768"
+    echo -e "${YELLOW}  # Use model default context (typically 2k-8k tokens)"
+    echo "  $0 llama3.3:70b 4"
     echo ""
-    echo -e "${YELLOW}  # Auto-run without confirmations"
+    echo -e "${YELLOW}  # Custom context window (creates custom model)"
+    echo "  $0 gemma3:27b 2 32768"
+    echo ""
+    echo -e "${YELLOW}  # Auto-run with custom context"
     echo "  $0 gemma3:27b 2 16384 -s"
     echo ""
-    echo -e "${YELLOW}  # Custom user directory"
-    echo "  $0 gemma3:27b 2 100000 -u custom_dir"
+    echo -e "${YELLOW}  # Custom user directory with model default context"
+    echo "  $0 gemma3:27b 2 -u custom_dir"
     echo ""
     echo -e "${YELLOW}Available Models (examples):${NC}"
     echo "• gemma3:27b (Google Gemma 3 - 27B parameters)"
@@ -70,6 +75,11 @@ show_usage() {
     echo "• Script auto-detects available NVIDIA GPUs using nvidia-smi"
     echo "• Ensures proper load balancing across multiple A100 GPUs"
     echo "• Override detection by specifying num_gpus parameter"
+    echo ""
+    echo -e "${YELLOW}Context Window Behavior:${NC}"
+    echo "• No context size specified: Uses Ollama's default (typically 2k-8k tokens)"
+    echo "• Context size specified: Creates custom model with that context size"
+    echo "• Custom models get names like 'model_ctx32768' for easy identification"
     echo ""
     echo -e "${YELLOW}Interactive Features:${NC}"
     echo "• Direct CLI interaction with ollama"
@@ -83,7 +93,7 @@ parse_args() {
     # Set defaults
     MODEL_NAME="$DEFAULT_MODEL"
     NUM_GPUS="auto"
-    CONTEXT_SIZE="$DEFAULT_CONTEXT_SIZE"
+    CONTEXT_SIZE=""  # Will remain empty if not specified
     
     # Parse positional arguments first
     if [ $# -ge 1 ] && [[ ! "$1" =~ ^- ]]; then
@@ -98,6 +108,7 @@ parse_args() {
     
     if [ $# -ge 1 ] && [[ ! "$1" =~ ^- ]]; then
         CONTEXT_SIZE="$1"
+        CONTEXT_EXPLICITLY_SET=true
         shift
     fi
     
@@ -180,7 +191,11 @@ echo -e "${GREEN}GitHub: https://github.com/RichardStoker-USDA${NC}"
 
 echo -e "\n${BLUE}Configuration:${NC}"
 echo -e "Model: ${GREEN}$MODEL_NAME${NC}"
-echo -e "Context size: ${GREEN}$CONTEXT_SIZE tokens${NC}"
+if [ "$CONTEXT_EXPLICITLY_SET" = true ]; then
+    echo -e "Context size: ${GREEN}$CONTEXT_SIZE tokens (custom)${NC}"
+else
+    echo -e "Context size: ${GREEN}Ollama default (typically 2k-8k tokens)${NC}"
+fi
 echo -e "Auto-run mode: ${GREEN}$AUTO_RUN${NC}"
 
 # Auto-detect user directory
@@ -326,35 +341,49 @@ if ! ollama list | grep -q "$MODEL_NAME"; then
     fi
 fi
 
-# Step 4: Create custom model with proper context window
-CUSTOM_MODEL_NAME="${MODEL_NAME}_ctx${CONTEXT_SIZE}"
-
-echo -e "${BLUE}Creating custom model with context window $CONTEXT_SIZE...${NC}"
-
-# Create Modelfile for custom context
-cat > /tmp/Modelfile_custom << MODELFILE_END
+# Step 4: Determine model to use based on context requirements
+if [ "$CONTEXT_EXPLICITLY_SET" = true ]; then
+    # Create custom model with specified context window
+    CUSTOM_MODEL_NAME="${MODEL_NAME}_ctx${CONTEXT_SIZE}"
+    
+    echo -e "${BLUE}Creating custom model with context window $CONTEXT_SIZE...${NC}"
+    
+    # Create Modelfile for custom context
+    cat > /tmp/Modelfile_custom << MODELFILE_END
 FROM $MODEL_NAME
 PARAMETER num_ctx $CONTEXT_SIZE
 MODELFILE_END
-
-# Create the custom model
-ollama create "$CUSTOM_MODEL_NAME" -f /tmp/Modelfile_custom
-
-if [ $? -ne 0 ]; then
-    echo -e "${YELLOW}Failed to create custom model, using original...${NC}"
+    
+    # Create the custom model
+    ollama create "$CUSTOM_MODEL_NAME" -f /tmp/Modelfile_custom
+    
+    if [ $? -ne 0 ]; then
+        echo -e "${YELLOW}Failed to create custom model, using original...${NC}"
+        CUSTOM_MODEL_NAME="$MODEL_NAME"
+    else
+        echo -e "${GREEN}Custom model created: $CUSTOM_MODEL_NAME${NC}"
+    fi
+    
+    # Verify context window setting for custom model
+    echo -e "${BLUE}Verifying context window is set to $CONTEXT_SIZE...${NC}"
+    ollama show "$CUSTOM_MODEL_NAME" | grep "num_ctx" || echo "Context window: $CONTEXT_SIZE (set via custom model)"
+else
+    # Use original model with Ollama's default context
     CUSTOM_MODEL_NAME="$MODEL_NAME"
+    echo -e "${BLUE}Using model with Ollama's default context window...${NC}"
+    echo -e "${GREEN}Model: $CUSTOM_MODEL_NAME (default context)${NC}"
 fi
-
-# Step 5: Verify context window setting
-echo -e "${BLUE}Verifying context window is set to $CONTEXT_SIZE...${NC}"
-ollama show "$CUSTOM_MODEL_NAME" | grep "num_ctx" || echo "Context window: $CONTEXT_SIZE (set via custom model)"
 
 # Step 6: Show interactive instructions
 echo -e "\n${GREEN}===============================================${NC}"
 echo -e "${GREEN}🚀 INTERACTIVE SESSION READY 🚀${NC}"
 echo -e "${GREEN}===============================================${NC}"
 echo -e "${BLUE}Model: ${GREEN}$CUSTOM_MODEL_NAME${NC}"
-echo -e "${BLUE}Context: ${GREEN}$CONTEXT_SIZE tokens${NC}"
+if [ "$CONTEXT_EXPLICITLY_SET" = true ]; then
+    echo -e "${BLUE}Context: ${GREEN}$CONTEXT_SIZE tokens (custom)${NC}"
+else
+    echo -e "${BLUE}Context: ${GREEN}Ollama default${NC}"
+fi
 echo -e "${BLUE}GPUs: ${GREEN}$NUM_GPUS ($GPU_LIST)${NC}"
 echo ""
 echo -e "${YELLOW}📋 Available Commands:${NC}"
@@ -367,7 +396,11 @@ echo -e "${YELLOW}💡 Usage Tips:${NC}"
 echo "• Use 'ollama run $CUSTOM_MODEL_NAME' to start chatting"
 echo "• Type '/bye' in chat to exit the model"
 echo "• Use Ctrl+C to stop current operation"
-echo "• Context window is set to $CONTEXT_SIZE tokens"
+if [ "$CONTEXT_EXPLICITLY_SET" = true ]; then
+    echo "• Context window is set to $CONTEXT_SIZE tokens"
+else
+    echo "• Using Ollama's default context window for this model"
+fi
 echo ""
 echo -e "${YELLOW}🔧 Advanced Options:${NC}"
 echo "• Add parameters: ollama run $CUSTOM_MODEL_NAME --parameter temperature 0.8"
