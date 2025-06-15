@@ -1,0 +1,1428 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ollama Batch Automation - SCINet User Manual</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: "Source Sans Pro", "Helvetica Neue", Helvetica, Roboto, Arial, sans-serif;
+            line-height: 1.6;
+            color: #1b1b1b;
+            background: #ffffff;
+            min-height: 100vh;
+            font-weight: 400;
+        }
+        
+        /* Header styling */
+        .header {
+            background: white;
+            border-bottom: 2px solid #dfe1e2;
+            padding: 1rem 0;
+            min-height: 80px;
+        }
+        
+        .header-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 2rem;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+        
+        .logo {
+            height: 40px;
+            width: auto;
+        }
+        
+        .title-section {
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .agency-name {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #1b1b1b;
+            margin: 0;
+            line-height: 1.3;
+        }
+        
+        .tagline {
+            font-size: 0.875rem;
+            color: #565c65;
+            margin: 0;
+            line-height: 1.2;
+        }
+        
+        .manual-title {
+            text-align: center;
+            padding: 2rem 0 1rem 0;
+            background: #f8f9fa;
+            border-bottom: 1px solid #dfe1e2;
+        }
+        
+        .manual-title h1 {
+            font-size: 2.5rem;
+            margin-bottom: 0.5rem;
+            color: #1b1b1b;
+            font-weight: 700;
+        }
+        
+        .manual-title p {
+            font-size: 1.2rem;
+            color: #565c65;
+            margin-bottom: 0.25rem;
+        }
+        
+        .manual-title .version {
+            font-size: 0.9rem;
+            color: #565c65;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+        }
+        
+        .layout {
+            display: grid;
+            grid-template-columns: 250px 1fr;
+            gap: 0;
+            min-height: calc(100vh - 200px);
+        }
+        
+        /* Sidebar styling */
+        .sidebar {
+            background: #f8f9fa;
+            border-right: 1px solid #dfe1e2;
+            padding: 2rem 0;
+            position: sticky;
+            top: 0;
+            height: 100vh;
+            overflow-y: auto;
+            width: 250px;
+        }
+        
+        .toc h2 {
+            color: #1b1b1b;
+            margin: 0 1rem 1rem 1rem;
+            font-size: 1.3rem;
+            font-weight: 700;
+            border-bottom: 2px solid #dfe1e2;
+            padding-bottom: 0.5rem;
+        }
+        
+        .toc ul {
+            list-style: none;
+            margin: 0;
+            padding: 0;
+        }
+        
+        .toc li {
+            margin: 0;
+        }
+        
+        .toc a {
+            color: #1b1b1b;
+            text-decoration: none;
+            padding: 0.5rem 1rem;
+            display: block;
+            border-radius: 0;
+            transition: all 0.3s ease;
+            border-left: 3px solid transparent;
+            font-size: 1rem;
+            font-weight: 400;
+        }
+        
+        .toc a:hover {
+            background: #e6f3ff;
+            color: #005ea2;
+            border-left: 3px solid #005ea2;
+        }
+        
+        .toc a.active {
+            background: #005ea2;
+            color: white;
+            font-weight: 500;
+        }
+        
+        /* Main content styling */
+        .content {
+            padding: 2rem;
+            max-width: 800px;
+            background: white;
+        }
+        
+        .section {
+            margin-bottom: 2rem;
+            padding-bottom: 2rem;
+            border-bottom: 1px solid #dfe1e2;
+        }
+        
+        .section:last-child {
+            border-bottom: none;
+        }
+        
+        .section h2 {
+            color: #1b1b1b;
+            font-size: 2rem;
+            margin-bottom: 1rem;
+            font-weight: 700;
+            border-bottom: 3px solid #dfe1e2;
+            padding-bottom: 0.5rem;
+        }
+        
+        .section h3 {
+            color: #1b1b1b;
+            font-size: 1.5rem;
+            margin: 1.5rem 0 1rem 0;
+            font-weight: 700;
+        }
+        
+        .section h4 {
+            color: #1b1b1b;
+            font-size: 1.25rem;
+            margin: 1rem 0 0.5rem 0;
+            font-weight: 700;
+        }
+        
+        .section p {
+            margin-bottom: 1rem;
+            font-weight: 400;
+            line-height: 1.6;
+        }
+        
+        .section ul, .section ol {
+            margin: 1rem 0 1rem 2rem;
+        }
+        
+        .section li {
+            margin-bottom: 0.5rem;
+            line-height: 1.6;
+        }
+        
+        /* Alert boxes */
+        .alert {
+            padding: 1rem;
+            margin: 1rem 0;
+            border-radius: 0.25rem;
+            border: 1px solid;
+            font-weight: 400;
+        }
+        
+        .alert-info {
+            border-color: #9bdaf1;
+            background: #e7f6fd;
+            color: #1b1b1b;
+        }
+        
+        .alert-warning {
+            border-color: #ffbe2e;
+            background: #fffaf0;
+            color: #1b1b1b;
+        }
+        
+        .alert-success {
+            border-color: #00a91c;
+            background: #ecf7ec;
+            color: #1b1b1b;
+        }
+        
+        /* Code blocks */
+        .code-block {
+            background: #f8f9fa;
+            border: 1px solid #dfe1e2;
+            border-radius: 0.25rem;
+            font-family: "Roboto Mono", "Bitstream Vera Sans Mono", "Consolas", Monaco, "Courier New", Courier, monospace;
+            position: relative;
+            margin: 1rem 0;
+            overflow: hidden;
+        }
+        
+        .code-header {
+            background: #005ea2;
+            color: white;
+            padding: 0.75rem 1rem;
+            font-weight: 500;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.875rem;
+        }
+        
+        .code-block pre {
+            padding: 1rem;
+            margin: 0;
+            overflow-x: auto;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+            font-size: 0.875rem;
+            line-height: 1.4;
+            color: #1b1b1b;
+            max-width: 100%;
+        }
+        
+        .code-block pre.loading {
+            color: #565c65;
+            font-style: italic;
+            text-align: center;
+            padding: 2rem;
+        }
+        
+        .code-block pre.error {
+            color: #d63384;
+            font-style: italic;
+            text-align: center;
+            padding: 2rem;
+        }
+        
+        .copy-btn {
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            padding: 0.25rem 0.75rem;
+            border-radius: 0.25rem;
+            cursor: pointer;
+            font-size: 0.75rem;
+            transition: background 0.3s ease;
+            font-weight: 500;
+        }
+        
+        .copy-btn:hover {
+            background: rgba(255, 255, 255, 0.3);
+        }
+        
+        .copy-btn:active {
+            background: rgba(255, 255, 255, 0.4);
+        }
+        
+        /* Collapsible sections */
+        .collapsible {
+            border: 1px solid #dfe1e2;
+            border-radius: 0.25rem;
+            margin: 1rem 0;
+            overflow: hidden;
+        }
+        
+        .collapsible-header {
+            background: #005ea2;
+            color: white;
+            padding: 0.75rem 1rem;
+            cursor: pointer;
+            user-select: none;
+            font-weight: 500;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: background 0.3s ease;
+        }
+        
+        .collapsible-header:hover {
+            background: #0050a0;
+        }
+        
+        .collapsible-content {
+            padding: 1rem;
+            display: none;
+            background: white;
+        }
+        
+        .collapsible-content.active {
+            display: block;
+        }
+        
+        .toggle-icon {
+            transition: transform 0.3s ease;
+            font-weight: bold;
+        }
+        
+        .toggle-icon.active {
+            transform: rotate(180deg);
+        }
+        
+        /* Tables */
+        .parameter-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 1rem 0;
+            background: white;
+            border: 1px solid #dfe1e2;
+            border-radius: 0.25rem;
+            overflow: hidden;
+        }
+        
+        .parameter-table th {
+            background: #005ea2;
+            color: white;
+            padding: 0.75rem;
+            text-align: left;
+            font-weight: 700;
+            font-size: 0.875rem;
+        }
+        
+        .parameter-table td {
+            padding: 0.75rem;
+            border-bottom: 1px solid #dfe1e2;
+            font-size: 0.875rem;
+        }
+        
+        .parameter-table tr:hover {
+            background: #f8f9fa;
+        }
+        
+        /* Badges */
+        .badge {
+            display: inline-block;
+            padding: 0.25rem 0.5rem;
+            border-radius: 0.25rem;
+            font-size: 0.75rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            margin-right: 0.5rem;
+        }
+        
+        .badge-optional {
+            background: #ecf7ec;
+            color: #00a91c;
+        }
+        
+        .badge-important {
+            background: #fffaf0;
+            color: #ffbe2e;
+        }
+        
+        .badge-advanced {
+            background: #e7f6fd;
+            color: #005ea2;
+        }
+        
+        /* Step counter */
+        .step-counter {
+            background: #005ea2;
+            color: white;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            margin-right: 0.5rem;
+            font-size: 0.875rem;
+        }
+        
+/* Responsive design */
+        @media (max-width: 1024px) {
+            .layout {
+                grid-template-columns: 1fr !important;
+                justify-items: center !important;
+            }
+            
+            .sidebar {
+                position: static !important;
+                height: auto !important;
+                border-right: none !important;
+                border-bottom: 1px solid #dfe1e2 !important;
+                max-width: 100% !important;
+                width: 100% !important;
+            }
+            
+            .content {
+                padding: 1rem !important;
+                max-width: 100% !important;
+                width: 100% !important;
+                text-align: left !important;
+            }
+        }
+        
+        @media (max-width: 768px) {
+    /* Prevent horizontal scroll on body but allow on content */
+    html, body {
+        overflow-x: hidden !important;
+        width: 100% !important;
+        margin: 0 !important;
+        padding: 0 !important;
+    }
+    
+    /* Allow proper text sizing */
+    html {
+        -webkit-text-size-adjust: 100% !important;
+    }
+    
+    /* Fix header alignment - maintain USDA formatting requirements */
+    .header {
+        width: 100% !important;
+        padding: 0.75rem 0 !important;
+        margin: 0 !important;
+        box-sizing: border-box !important;
+        background: white !important;
+        border-bottom: 2px solid #dfe1e2 !important;
+    }
+    
+    .header-container {
+        max-width: 100% !important;
+        padding: 0 1rem !important;
+        margin: 0 !important;
+        box-sizing: border-box !important;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: flex-start !important;
+        gap: 0.75rem !important;
+        flex-wrap: nowrap !important;
+    }
+    
+    .logo {
+        height: 35px !important;
+        width: auto !important;
+        flex-shrink: 0 !important;
+    }
+    
+    .title-section {
+        flex: 1 !important;
+        min-width: 0 !important;
+        display: flex !important;
+        flex-direction: column !important;
+        align-items: flex-start !important;
+        justify-content: center !important;
+    }
+    
+    .agency-name {
+        font-size: 1.1rem !important;
+        font-weight: 700 !important;
+        color: #1b1b1b !important;
+        margin: 0 !important;
+        line-height: 1.2 !important;
+    }
+    
+    .tagline {
+        font-size: 0.7rem !important;
+        color: #565c65 !important;
+        margin: 0 !important;
+        line-height: 1.2 !important;
+    }
+    
+    /* Manual title section */
+    .manual-title {
+        width: 100% !important;
+        padding: 1.5rem 1rem !important;
+        margin: 0 !important;
+        box-sizing: border-box !important;
+        text-align: center !important;
+        background: #f8f9fa !important;
+        border-bottom: 1px solid #dfe1e2 !important;
+    }
+    
+    .manual-title h1 {
+        font-size: 1.8rem !important;
+        margin-bottom: 0.5rem !important;
+        color: #1b1b1b !important;
+        font-weight: 700 !important;
+    }
+    
+    .manual-title p {
+        font-size: 0.95rem !important;
+        color: #565c65 !important;
+        margin-bottom: 0.25rem !important;
+        padding: 0 0.5rem !important;
+        line-height: 1.4 !important;
+    }
+    
+    .manual-title .version {
+        font-size: 0.75rem !important;
+        color: #565c65 !important;
+    }
+    
+    /* Container and layout */
+    .container {
+        width: 100% !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        box-sizing: border-box !important;
+    }
+    
+    .layout {
+        display: grid !important;
+        grid-template-columns: 1fr !important;
+        gap: 0 !important;
+        width: 100% !important;
+    }
+    
+    .sidebar {
+        width: 100% !important;
+        position: static !important;
+        height: auto !important;
+        border-right: none !important;
+        border-bottom: 1px solid #dfe1e2 !important;
+        background: #f8f9fa !important;
+        padding: 2rem 1rem !important;
+    }
+    
+    /* Content area with horizontal scroll for tables */
+    .content {
+        width: 100% !important;
+        padding: 1rem !important;
+        box-sizing: border-box !important;
+        background: white !important;
+        overflow-x: auto !important; /* Allow horizontal scroll for content */
+    }
+    
+    /* Table handling - make tables scrollable */
+    .parameter-table {
+        min-width: 600px !important; /* Maintain minimum readable width */
+        width: 100% !important;
+        margin: 1rem 0 !important;
+    }
+    
+    /* Wrap tables in scrollable container */
+    .content table {
+        display: block !important;
+        overflow-x: auto !important;
+        -webkit-overflow-scrolling: touch !important;
+    }
+    
+    /* Code blocks should also be scrollable */
+    .code-block {
+        max-width: 100% !important;
+        overflow-x: auto !important;
+    }
+    
+    .code-block pre {
+        overflow-x: auto !important;
+        white-space: pre !important; /* Don't wrap code */
+        word-wrap: normal !important;
+    }
+    
+    /* Table of contents */
+    .toc {
+        width: 100% !important;
+        text-align: center !important;
+    }
+    
+    .toc h2 {
+        color: #1b1b1b !important;
+        margin: 0 0 1.5rem 0 !important;
+        font-size: 1.5rem !important;
+        font-weight: 700 !important;
+        border-bottom: 2px solid #dfe1e2 !important;
+        padding-bottom: 0.5rem !important;
+        text-align: center !important;
+    }
+    
+    .toc ul {
+        list-style: none !important;
+        margin: 0 auto !important;
+        padding: 0 !important;
+        max-width: 600px !important;
+    }
+    
+    .toc li {
+        margin: 0 !important;
+    }
+    
+    .toc a {
+        color: #1b1b1b !important;
+        text-decoration: none !important;
+        padding: 1rem 1.5rem !important;
+        display: block !important;
+        border-bottom: 1px solid #e2e8f0 !important;
+        font-size: 1.1rem !important;
+        font-weight: 400 !important;
+        text-align: center !important;
+        transition: all 0.3s ease !important;
+    }
+    
+    .toc a:hover {
+        background: #e6f3ff !important;
+        color: #005ea2 !important;
+    }
+    
+    .toc a.active {
+        background: #005ea2 !important;
+        color: white !important;
+        font-weight: 500 !important;
+    }
+    
+    /* Very small screens */
+    @media (max-width: 380px) {
+        .agency-name {
+            font-size: 1rem !important;
+        }
+        
+        .tagline {
+            font-size: 0.65rem !important;
+        }
+        
+        .logo {
+            height: 30px !important;
+        }
+        
+        .header-container {
+            gap: 0.5rem !important;
+        }
+    }
+}
+    </style>
+</head>
+<body>
+    <!-- Header with USDA branding -->
+    <header class="header">
+        <div class="header-container">
+            <!-- Note: Replace with actual USDA logo URL or download the logo file -->
+            <img src="https://scinet.usda.gov/assets/img/site/usda-logo-color.svg" alt="USDA" class="logo">
+            <div class="title-section">
+                <h1 class="agency-name">SCINet Scientific Computing</h1>
+                <p class="tagline">U.S. Department of Agriculture</p>
+            </div>
+        </div>
+    </header>
+
+    <!-- Manual title section -->
+    <div class="manual-title">
+        <h1>Ollama Batch Automation</h1>
+        <p>Complete User Manual for LLM Inference on <span style="white-space: nowrap;">SCINet-Atlas</span> HPC</p>
+        <p class="version">Version 3.0 | Created by Richard Stoker | USDA-ARS</p>
+    </div>
+    
+    <div class="container">
+        <div class="layout">
+            <nav class="sidebar">
+                <div class="toc">
+                    <h2>Table of Contents</h2>
+                    <ul>
+                        <li><a href="#introduction">1. Introduction</a></li>
+                        <li><a href="#core-concepts">2. Core Concepts</a></li>
+                        <li><a href="#resource-planning">3. Resource Planning</a></li>
+                        <li><a href="#atlas-setup">4. Atlas Environment Setup</a></li>
+                        <li><a href="#directory-setup">5. Directory & Prompt Setup</a></li>
+                        <li><a href="#script-usage">6. Running the Script</a></li>
+                        <li><a href="#understanding-output">7. Understanding Output</a></li>
+                        <li><a href="#customization">8. Script Customization</a></li>
+                        <li><a href="#interactive-session">9. Interactive Session Mode</a></li>
+                        <li><a href="#troubleshooting">10. Troubleshooting</a></li>
+                        <li><a href="#full-script">11. Full Batch Script Source</a></li>
+                        <li><a href="#interactive-script">12. Interactive Script Source</a></li>
+                    </ul>
+                </div>
+            </nav>
+            
+            <main class="content">
+                <!-- Section 1: Introduction -->
+                <section id="introduction" class="section">
+                    <h2>1. Introduction</h2>
+                    
+                    <h3>1.1. Purpose of this Manual</h3>
+                    <p>This comprehensive manual provides detailed instructions for using the <strong>Ollama Batch Automation script</strong>, a powerful tool designed for large-scale Large Language Model (LLM) inference on the SCINet-Atlas High-Performance Computing (HPC) system. It is intended for researchers and data scientists who need to process multiple text-based prompts efficiently by leveraging the powerful multi-GPU nodes available on Atlas.</p>
+                    
+                    <div class="alert alert-info">
+                        <strong>What this script does:</strong> Automates the entire workflow from environment setup and resource management to processing prompts and organizing results, allowing users to focus on their research rather than manual configuration.
+                    </div>
+                    
+                    <h3>1.2. About the SCINet-Atlas HPC Environment</h3>
+                    <ul>
+                        <li><strong>SCINet:</strong> The USDA's Agricultural Research Service (ARS) Scientific Computing Initiative. Its goal is to provide USDA scientists with access to HPC clusters, high-speed networking, and training to accelerate agricultural research.</li>
+                        <li><strong>Atlas:</strong> One of SCINet's primary HPC clusters, located at Mississippi State University. Atlas provides significant computational power, including nodes equipped with powerful NVIDIA A100 GPUs (80GB VRAM each), making it an ideal environment for demanding AI and LLM workloads.</li>
+                    </ul>
+                    
+                    <h3>1.3. What is Ollama?</h3>
+                    <p><strong>Ollama</strong> is an open-source tool that makes it incredibly easy to run powerful open-source Large Language Models (LLMs) like Llama, Gemma, and Mistral.</p>
+                    
+                    <h4>Why Ollama is used:</h4>
+                    <ul>
+                        <li><strong>Simplicity:</strong> Bundles models, weights, and configuration into single, easy-to-manage packages</li>
+                        <li><strong>Privacy and Control:</strong> Runs locally on systems like Atlas, ensuring research data never leaves secure HPC environment</li>
+                        <li><strong>Performance:</strong> Optimized for GPU acceleration, efficient for demanding LLM computations</li>
+                        <li><strong>Popularity:</strong> One of the most popular tools for researchers working with open-source LLMs</li>
+                    </ul>
+                </section>
+                
+                <!-- Section 2: Core Concepts -->
+                <section id="core-concepts" class="section">
+                    <h2>2. Core Concepts Explained</h2>
+                    
+                    <h3>2.1. What is a Context Window?</h3>
+                    <p>In Large Language Models, the <strong>context window</strong> (or context length) refers to the total amount of text the model can "remember" or consider at one time. This includes both the input prompt and the generated output. It's measured in <strong>tokens</strong>, where one token is roughly equivalent to 4 characters or 0.75 words of English text.</p>
+                    
+                    <div class="alert alert-info">
+                        <strong>Why It Matters:</strong> A larger context window allows you to work with longer documents, maintain more coherent conversations, and perform complex reasoning tasks that require understanding extensive background information.
+                    </div>
+                    
+                    <ul>
+                        <li><strong>Ollama's Default:</strong> Most models have a context window of 2048 tokens (~1500 words), often insufficient for research papers or large data files</li>
+                        <li><strong>Script's Advantage:</strong> Allows you to specify much larger context windows (e.g., 131072 for 128k tokens), enabling processing of entire documents in a single prompt</li>
+                    </ul>
+                    
+                    <h3>2.2. Multi-GPU Load Balancing in Ollama</h3>
+                    <p>When a model is too large to fit into a single GPU's VRAM, or for better performance, Ollama can split the model's layers across multiple GPUs.</p>
+                    
+                    <div class="alert alert-success">
+                        <strong>How It Works:</strong> The script uses CUDA_VISIBLE_DEVICES and OLLAMA_NUM_GPU environment variables to control GPU usage automatically. More GPUs equals more total VRAM, which equals support for much larger models with larger context windows.
+                    </div>
+                    
+                    <h3>2.3. Storage Management</h3>
+                    <p>The script intelligently manages storage to work around home directory quotas by using project storage space and creating symbolic links as needed.</p>
+                </section>
+                
+                <!-- Section 3: Resource Planning -->
+                <section id="resource-planning" class="section">
+                    <h2>3. Resource Planning</h2>
+                    
+                    <h3>3.1. GPU Requirements by Model Size</h3>
+                    <p>Atlas A100 GPUs have 80GB VRAM each. Most traditional models can run on a single A100, but large mixture-of-experts (MoE) models require multiple GPUs.</p>
+                    
+                    <table class="parameter-table">
+                        <thead>
+                            <tr>
+                                <th>Model Type</th>
+                                <th>Model Size</th>
+                                <th>Recommended GPUs</th>
+                                <th>Total VRAM</th>
+                                <th>Example Models</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Small Dense</td>
+                                <td>7B-8B parameters</td>
+                                <td>1 GPU</td>
+                                <td>~6-8 GB</td>
+                                <td>llama3.2:8b, gemma2:9b</td>
+                            </tr>
+                            <tr>
+                                <td>Medium Dense</td>
+                                <td>13B-27B parameters</td>
+                                <td>1 GPU</td>
+                                <td>~12-25 GB</td>
+                                <td>llama3.1:13b, gemma3:27b</td>
+                            </tr>
+                            <tr>
+                                <td>Large Dense</td>
+                                <td>70B parameters</td>
+                                <td>1 GPU</td>
+                                <td>~60-70 GB</td>
+                                <td>llama3.1:70b</td>
+                            </tr>
+                            <tr>
+                                <td>Small MoE</td>
+                                <td>Scout (109B total, 17B active)</td>
+                                <td>2-3 GPUs</td>
+                                <td>~67 GB (quantized)</td>
+                                <td>llama4:scout</td>
+                            </tr>
+                            <tr>
+                                <td>Large MoE</td>
+                                <td>Maverick (400B total, 17B active)</td>
+                                <td>4+ GPUs</td>
+                                <td>~200+ GB</td>
+                                <td>llama4:maverick</td>
+                            </tr>
+                            <tr>
+                                <td>Reasoning Models</td>
+                                <td>Various sizes (8B-70B)</td>
+                                <td>1-2 GPUs</td>
+                                <td>Varies by base model</td>
+                                <td>r1-1776, cogito:8b</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    
+                    <h3>3.2. Time Estimation Guidelines</h3>
+                    <div class="alert alert-warning">
+                        <strong>Processing Time Factors:</strong>
+                        <ul>
+                            <li><strong>Model size:</strong> Larger models = slower inference</li>
+                            <li><strong>Context window size:</strong> Larger context = more memory usage, potentially slower processing</li>
+                            <li><strong>Number of GPUs:</strong> More GPUs = more total VRAM for larger models and context windows (not necessarily faster inference for smaller models)</li>
+                            <li><strong>Reasoning models:</strong> Models like r1-1776 and cogito must reason before responding, significantly increasing inference time, especially for large reasoning models</li>
+                            <li><strong>Prompt complexity and length:</strong> More complex prompts take longer to process</li>
+                            <li><strong>Desired response length:</strong> Longer responses take more time to generate</li>
+                        </ul>
+                    </div>
+                </section>
+                
+                <!-- Section 4: Atlas Setup -->
+                <section id="atlas-setup" class="section">
+                    <h2>4. Atlas Environment Setup</h2>
+                    
+                    <h3>4.1. Accessing Atlas Open OnDemand</h3>
+                    <p>To begin using the Ollama Batch Automation script, you'll need to set up an interactive Atlas desktop session through the Open OnDemand interface.</p>
+                    
+                    <h4><span class="step-counter">1</span>Launch Atlas Desktop</h4>
+                    <p>Navigate to the Atlas Open OnDemand portal and select <strong>Atlas Desktop</strong>. Configure your session with the following recommended settings:</p>
+                    
+                    <div class="collapsible">
+                        <div class="collapsible-header" onclick="toggleCollapsible(this)">
+                            Atlas Desktop Configuration Parameters
+                            <span class="toggle-icon">▼</span>
+                        </div>
+                        <div class="collapsible-content">
+                            <table class="parameter-table">
+                                <thead>
+                                    <tr>
+                                        <th>Parameter</th>
+                                        <th>Recommended Value</th>
+                                        <th>Description</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>Account</td>
+                                        <td>your_project_account</td>
+                                        <td>Your specific project account name</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Partition</td>
+                                        <td>gpu-a100</td>
+                                        <td>Use GPU-enabled nodes with A100 GPUs</td>
+                                    </tr>
+                                    <tr>
+                                        <td>QOS</td>
+                                        <td>normal 14-00:00:00</td>
+                                        <td>Standard queue with up to 14 hours</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Number of hours</td>
+                                        <td>4</td>
+                                        <td>Sufficient time for most batch jobs</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Number of nodes</td>
+                                        <td>1</td>
+                                        <td>Single node is sufficient</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Number of tasks</td>
+                                        <td>1</td>
+                                        <td>One task per job</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Additional Slurm Parameters</td>
+                                        <td>--gres=gpu:a100:4 --cpus-per-task=32 --mem=64G</td>
+                                        <td>Request 4 A100 GPUs with adequate CPU and memory</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    
+                    <h4><span class="step-counter">2</span>Load Required Modules</h4>
+                    <p>Once your Atlas desktop session is active, open a terminal and load the necessary modules:</p>
+                    
+                    <div class="code-block">
+                        <div class="code-header">
+                            Module Loading Commands
+                            <button class="copy-btn" onclick="copyCode('module-load-code')">Copy</button>
+                        </div>
+                        <pre id="module-load-code"># Load Apptainer (required for running Ollama container)
+module load apptainer
+
+# Verify modules are loaded
+module list</pre>
+                    </div>
+                    
+                    <div class="alert alert-warning">
+                        <strong>Important:</strong> Module versions may change over time. If you encounter issues, check available versions with <code>module avail apptainer</code> and update the script's module loading section accordingly.
+                    </div>
+                </section>
+                
+                <!-- Section 5: Directory Setup -->
+                <section id="directory-setup" class="section">
+                    <h2>5. Directory & Prompt Preparation</h2>
+                    
+                    <h3>5.1. Project Directory Structure</h3>
+                    <p>The script expects a specific directory structure for optimal organization and functionality:</p>
+                    
+                    <div class="code-block">
+                        <div class="code-header">
+                            Recommended Directory Structure
+                            <button class="copy-btn" onclick="copyCode('dir-structure-code')">Copy</button>
+                        </div>
+                        <pre id="dir-structure-code">your-project-folder/
+├── ollama_batch_automation.sh    # The main batch script
+├── ollama_interactive.sh         # The interactive session script
+├── input_prompts/                # Directory containing .txt prompt files
+│   ├── prompt_001.txt
+│   ├── prompt_002.txt
+│   └── synthesis_question.txt    # Optional: for synthesis mode
+├── results/                      # Output directory (created automatically)
+└── containers/                   # Container storage (created automatically)</pre>
+                    </div>
+                </section>
+                
+                <!-- Section 6: Script Usage -->
+                <section id="script-usage" class="section">
+                    <h2>6. Running the Script</h2>
+                    
+                    <h3>6.1. Basic Usage</h3>
+                    <p>The script can be run with various parameters to customize its behavior:</p>
+                    
+                    <div class="code-block">
+                        <div class="code-header">
+                            Basic Syntax
+                            <button class="copy-btn" onclick="copyCode('basic-syntax-code')">Copy</button>
+                        </div>
+                        <pre id="basic-syntax-code">./ollama_batch_automation.sh [model_name] [input_dir] [output_dir] [num_gpus] [ctx_size] [flags]</pre>
+                    </div>
+                    
+                    <h3>6.2. Parameters Explained</h3>
+                    <table class="parameter-table">
+                        <thead>
+                            <tr>
+                                <th>Parameter</th>
+                                <th>Default Value</th>
+                                <th>Description</th>
+                                <th>Example</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><code>model_name</code></td>
+                                <td>gemma3:27b</td>
+                                <td>Ollama model to use</td>
+                                <td>llama3.1:70b, llama4:scout, r1-1776</td>
+                            </tr>
+                            <tr>
+                                <td><code>input_dir</code></td>
+                                <td>./input_prompts</td>
+                                <td>Directory with .txt prompt files</td>
+                                <td>./my_prompts, /path/to/data</td>
+                            </tr>
+                            <tr>
+                                <td><code>output_dir</code></td>
+                                <td>./results</td>
+                                <td>Output directory for results</td>
+                                <td>./analysis_results</td>
+                            </tr>
+                            <tr>
+                                <td><code>num_gpus</code></td>
+                                <td>auto-detect</td>
+                                <td>Number of GPUs to use</td>
+                                <td>1, 2, 4</td>
+                            </tr>
+                            <tr>
+                                <td><code>ctx_size</code></td>
+                                <td>131072</td>
+                                <td>Context window size in tokens</td>
+                                <td>32768, 131072, 262144</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </section>
+                
+                <!-- Section 7: Understanding Output -->
+                <section id="understanding-output" class="section">
+                    <h2>7. Understanding the Output</h2>
+                    
+                    <h3>7.1. Output Directory Structure</h3>
+                    <p>The script creates a timestamped batch directory with organized subdirectories:</p>
+                    
+                    <div class="code-block">
+                        <div class="code-header">
+                            Output Structure
+                            <button class="copy-btn" onclick="copyCode('output-structure-code')">Copy</button>
+                        </div>
+                        <pre id="output-structure-code">results/
+└── batch_20250612_143022/           # Timestamped batch directory
+    ├── batch_info/                  # Batch metadata and logs
+    │   ├── batch_summary_20250612_143022.txt
+    │   ├── technical_log_20250612_143022.txt
+    │   └── batch_config.txt
+    ├── analysis_outputs/            # Individual prompt results
+    │   ├── prompt_001_result.txt
+    │   ├── prompt_002_result.txt
+    │   └── synthesis_result.txt
+    ├── prompts_archive/             # Copy of input prompts
+    │   ├── prompt_001.txt
+    │   └── prompt_002.txt
+    └── synthesis_analysis/          # Synthesis mode outputs (if applicable)
+        └── synthesis_result.txt</pre>
+                    </div>
+                </section>
+                
+                <!-- Section 8: Customization -->
+                <section id="customization" class="section">
+                    <h2>8. Script Customization</h2>
+                    
+                    <h3>8.1. Adapting for Different Projects</h3>
+                    <p>To use this script in different project environments, you'll need to modify several key variables:</p>
+                    
+                    <div class="collapsible">
+                        <div class="collapsible-header" onclick="toggleCollapsible(this)">
+                            <span class="badge badge-important">Important</span> Project-Specific Variables
+                            <span class="toggle-icon">▼</span>
+                        </div>
+                        <div class="collapsible-content">
+                            <p>These variables need to be updated for your specific project:</p>
+                            
+                            <div class="code-block">
+                                <div class="code-header">
+                                    Variables to Modify (Lines 15-17)
+                                    <button class="copy-btn" onclick="copyCode('project-vars-code')">Copy</button>
+                                </div>
+                                <pre id="project-vars-code"># Configuration - adjust these as needed
+DEFAULT_MODEL="gemma3:27b"                    # Change to your preferred default model
+DEFAULT_CONTEXT_SIZE=131072                   # Adjust default context size
+PROJECT_NAME="lemay_diet_guthealth"           # ⚠️ CHANGE TO YOUR PROJECT NAME</pre>
+                            </div>
+                            
+                            <div class="alert alert-warning">
+                                <strong>Critical:</strong> The <code>PROJECT_NAME</code> variable must match your Atlas project account name. This is used for storage path construction and resource allocation.
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Section 9: Interactive Session Mode -->
+                <section id="interactive-session" class="section">
+                    <h2>9. Interactive Session Mode</h2>
+                    
+                    <h3>9.1. What is Interactive Mode?</h3>
+                    <p>The <strong>Interactive Session Mode</strong> provides real-time conversation capabilities with Large Language Models through a terminal interface. Unlike batch processing, this mode allows for:</p>
+                    
+                    <ul>
+                        <li><strong>Real-time Chat:</strong> Direct conversation with models through streaming text responses</li>
+                        <li><strong>Immediate Feedback:</strong> Instant responses without waiting for batch processing</li>
+                        <li><strong>Exploratory Research:</strong> Perfect for testing prompts, exploring model capabilities, and iterative research</li>
+                        <li><strong>Terminal-based Interface:</strong> Works directly in Atlas terminal or Xterm desktop sessions</li>
+                    </ul>
+                    
+                    <div class="alert alert-info">
+                        <strong>When to Use Interactive Mode:</strong> Ideal for exploratory research, prompt testing, debugging model behavior, educational demonstrations, and scenarios where you need immediate responses rather than batch processing multiple files.
+                    </div>
+                    
+                    <h3>9.2. How Interactive Mode Works</h3>
+                    <p>The interactive script sets up a complete Ollama environment with your specified model and launches a terminal-based chat interface. The conversation happens in real-time with streaming text output, similar to ChatGPT but running locally on Atlas hardware.</p>
+                    
+                    <h4>Key Features:</h4>
+                    <ul>
+                        <li><strong>Streaming Responses:</strong> Text appears as the model generates it</li>
+                        <li><strong>Context Awareness:</strong> Maintains conversation history within the context window</li>
+                        <li><strong>GPU Optimization:</strong> Automatically configures multiple GPUs for optimal performance</li>
+                        <li><strong>Custom Context Windows:</strong> Set large context windows for extended conversations</li>
+                        <li><strong>Model Flexibility:</strong> Works with any Ollama-compatible model</li>
+                    </ul>
+                    
+                    <h3>9.3. Running Interactive Sessions</h3>
+                    
+                    <div class="code-block">
+                        <div class="code-header">
+                            Interactive Script Usage
+                            <button class="copy-btn" onclick="copyCode('interactive-usage-code')">Copy</button>
+                        </div>
+                        <pre id="interactive-usage-code"># Basic usage - uses defaults
+./ollama_interactive.sh
+
+# Specify model and context size
+./ollama_interactive.sh gemma3:27b 2 131072
+
+# Large model with extended context
+./ollama_interactive.sh llama4:scout 4 262144
+
+# Auto-run without confirmations
+./ollama_interactive.sh llama4:17b-scout-16e-instruct-q8_0 6 65536 -s</pre>
+                    </div>
+                    
+                    <h3>9.4. Interactive Commands</h3>
+                    <p>Once the interactive session starts, you'll have access to several commands:</p>
+                    
+                    <table class="parameter-table">
+                        <thead>
+                            <tr>
+                                <th>Command</th>
+                                <th>Description</th>
+                                <th>Example</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><code>ollama run model_name</code></td>
+                                <td>Start chatting with the model</td>
+                                <td><code>ollama run gemma3:27b</code></td>
+                            </tr>
+                            <tr>
+                                <td><code>ollama list</code></td>
+                                <td>Show available models</td>
+                                <td><code>ollama list</code></td>
+                            </tr>
+                            <tr>
+                                <td><code>ollama show model_name</code></td>
+                                <td>Display model information</td>
+                                <td><code>ollama show llama3.1:70b</code></td>
+                            </tr>
+                            <tr>
+                                <td><code>/bye</code></td>
+                                <td>Exit the current model chat</td>
+                                <td>Type in chat: <code>/bye</code></td>
+                            </tr>
+                            <tr>
+                                <td><code>exit</code></td>
+                                <td>Exit the interactive session</td>
+                                <td><code>exit</code></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    
+                    <h3>9.5. Use Cases for Interactive Mode</h3>
+                    
+                    <div class="collapsible">
+                        <div class="collapsible-header" onclick="toggleCollapsible(this)">
+                            Practical Applications
+                            <span class="toggle-icon">▼</span>
+                        </div>
+                        <div class="collapsible-content">
+                            <h4>Research and Development</h4>
+                            <ul>
+                                <li><strong>Prompt Engineering:</strong> Test and refine prompts before batch processing</li>
+                                <li><strong>Model Evaluation:</strong> Compare different models' responses to the same questions</li>
+                                <li><strong>Parameter Testing:</strong> Experiment with different context window sizes and temperature settings</li>
+                            </ul>
+                            
+                            <h4>Educational and Training</h4>
+                            <ul>
+                                <li><strong>Demonstrations:</strong> Show model capabilities in real-time</li>
+                                <li><strong>Training Sessions:</strong> Interactive learning about AI model behavior</li>
+                                <li><strong>Workshops:</strong> Hands-on experience with LLMs</li>
+                            </ul>
+                            
+                            <h4>Analysis and Debugging</h4>
+                            <ul>
+                                <li><strong>Model Behavior Analysis:</strong> Understand how models respond to different input types</li>
+                                <li><strong>Context Window Testing:</strong> See how models handle long conversations</li>
+                                <li><strong>Performance Monitoring:</strong> Observe response times and GPU utilization</li>
+                            </ul>
+                        </div>
+                    </div>
+                </section>
+                
+                <!-- Section 10: Troubleshooting -->
+                <section id="troubleshooting" class="section">
+                    <h2>10. Troubleshooting</h2>
+                    
+                    <h3>10.1. Common Issues and Solutions</h3>
+                    
+                    <div class="collapsible">
+                        <div class="collapsible-header" onclick="toggleCollapsible(this)">
+                            "Module not found" Errors
+                            <span class="toggle-icon">▼</span>
+                        </div>
+                        <div class="collapsible-content">
+                            <div class="alert alert-warning">
+                                <strong>Problem:</strong> Script fails with "module: command not found" or "apptainer module not available"
+                            </div>
+                            <p><strong>Solutions:</strong></p>
+                            <ol>
+                                <li>Check available modules: <code>module avail apptainer</code></li>
+                                <li>Verify if module versions have change</li>
+                                <li>Update script with correct module version</li>
+                            </ol>
+                        </div>
+                    </div>
+                    
+                    <div class="collapsible">
+                        <div class="collapsible-header" onclick="toggleCollapsible(this)">
+                            "Out of Memory" or GPU Errors
+                            <span class="toggle-icon">▼</span>
+                        </div>
+                        <div class="collapsible-content">
+                            <div class="alert alert-warning">
+                                <strong>Problem:</strong> Model fails to load or crashes with memory errors
+                            </div>
+                            <p><strong>Solutions:</strong></p>
+                            <ol>
+                                <li>Use a smaller model (e.g., switch from 70B to 27B parameters)</li>
+                                <li>Reduce context size: try 32768 instead of 131072</li>
+                                <li>Increase number of GPUs to distribute memory load for large MoE models</li>
+                                <li>Check GPU memory: <code>nvidia-smi</code></li>
+                                <li>Ensure you requested adequate GPU resources in your job</li>
+                            </ol>
+                        </div>
+                    </div>
+                    
+                    <h3>10.2. Getting Help</h3>
+                    <div class="alert alert-success">
+                        <strong>Support Resources:</strong>
+                        <ul>
+                            <li><strong>Script Creator:</strong> Richard Stoker (richard.stoker@usda.gov)</li>
+                            <li><strong>GitHub:</strong> https://github.com/RichardStoker-USDA/scinet-atlas-llm-toolkit/</li>
+                            <li><strong>SCINet Support:</strong> https://scinet.usda.gov/support/contact</li>
+                            <li><strong>Atlas Documentation:</strong> https://scinet.usda.gov/guides/resources/atlas</li>
+                        </ul>
+                    </div>
+                </section>
+                
+                <!-- Section 11: Full Batch Script -->
+                <section id="full-script" class="section">
+                    <h2>11. Full Batch Script Source Code</h2>
+                    <p>Below is the complete source code for the Ollama Batch Automation script. You can copy this entire script to use in your own projects.</p>
+                    
+                    <div class="collapsible">
+                        <div class="collapsible-header" onclick="toggleCollapsible(this)">
+                            Complete ollama_batch_automation.sh Script
+                            <span class="toggle-icon">▼</span>
+                        </div>
+                        <div class="collapsible-content">
+                            <div class="code-block">
+                                <div class="code-header">
+                                    ollama_batch_automation.sh - Complete Source Code
+                                    <button class="copy-btn" onclick="copyCode('full-script-code')">Copy Full Script</button>
+                                </div>
+                                <pre id="full-script-code" class="loading">Loading script from GitHub...</pre>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Section 12: Interactive Script -->
+                <section id="interactive-script" class="section">
+                    <h2>12. Interactive Script Source Code</h2>
+                    <p>Below is the complete source code for the Ollama Interactive Session script. This script enables real-time chat with LLMs through a terminal interface on Atlas.</p>
+                    
+                    <div class="collapsible">
+                        <div class="collapsible-header" onclick="toggleCollapsible(this)">
+                            Complete ollama_interactive.sh Script
+                            <span class="toggle-icon">▼</span>
+                        </div>
+                        <div class="collapsible-content">
+                            <div class="code-block">
+                                <div class="code-header">
+                                    ollama_interactive.sh - Complete Source Code
+                                    <button class="copy-btn" onclick="copyCode('interactive-script-code')">Copy Interactive Script</button>
+                                </div>
+                                <pre id="interactive-script-code" class="loading">Loading script from GitHub...</pre>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="alert alert-info">
+                        <strong>Note:</strong> Save both scripts to your project directory and make them executable with <code>chmod +x ollama_batch_automation.sh ollama_interactive.sh</code>. Remember to update the PROJECT_NAME variable in both scripts to match your Atlas project account name.
+                    </div>
+                </section>
+            </main>
+        </div>
+    </div>
+    
+    <script>
+        function toggleCollapsible(header) {
+            const content = header.nextElementSibling;
+            const icon = header.querySelector('.toggle-icon');
+            
+            if (content.classList.contains('active')) {
+                content.classList.remove('active');
+                icon.classList.remove('active');
+            } else {
+                content.classList.add('active');
+                icon.classList.add('active');
+            }
+        }
+        
+        function copyCode(elementId) {
+            const codeElement = document.getElementById(elementId);
+            const text = codeElement.textContent;
+            
+            navigator.clipboard.writeText(text).then(function() {
+                // Find the button that was clicked
+                const button = event.target;
+                const originalText = button.textContent;
+                
+                // Provide visual feedback
+                button.textContent = 'Copied!';
+                button.style.background = 'rgba(255, 255, 255, 0.4)';
+                
+                // Reset button after 2 seconds
+                setTimeout(function() {
+                    button.textContent = originalText;
+                    button.style.background = 'rgba(255, 255, 255, 0.2)';
+                }, 2000);
+            }).catch(function(err) {
+                console.error('Failed to copy text: ', err);
+                alert('Failed to copy to clipboard. Please copy manually.');
+            });
+        }
+        
+        // Smooth scrolling for table of contents links
+        document.querySelectorAll('.toc a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                    
+                    // Update active link
+                    document.querySelectorAll('.toc a').forEach(link => {
+                        link.classList.remove('active');
+                    });
+                    this.classList.add('active');
+                }
+            });
+        });
+        
+        // Update active navigation on scroll
+        window.addEventListener('scroll', function() {
+            const sections = document.querySelectorAll('.section');
+            const navLinks = document.querySelectorAll('.toc a');
+            
+            let current = '';
+            sections.forEach(section => {
+                const sectionTop = section.offsetTop;
+                const sectionHeight = section.clientHeight;
+                if (window.pageYOffset >= sectionTop - 60) {
+                    current = section.getAttribute('id');
+                }
+            });
+            
+            navLinks.forEach(link => {
+                link.classList.remove('active');
+                if (link.getAttribute('href') === '#' + current) {
+                    link.classList.add('active');
+                }
+            });
+        });
+        
+        // Initialize first nav item as active
+        document.addEventListener('DOMContentLoaded', function() {
+            const firstNavLink = document.querySelector('.toc a');
+            if (firstNavLink) {
+                firstNavLink.classList.add('active');
+            }
+        });
+        
+        // Load scripts from GitHub
+        async function loadScriptFromGitHub(elementId, scriptPath) {
+            const element = document.getElementById(elementId);
+            const rawUrl = `https://raw.githubusercontent.com/RichardStoker-USDA/scinet-atlas-llm-toolkit/main/scripts/${scriptPath}`;
+            
+            try {
+                const response = await fetch(rawUrl);
+                if (!response.ok) {
+                    throw new Error(`HTTP ${response.status}`);
+                }
+                const scriptContent = await response.text();
+                element.textContent = scriptContent;
+                element.classList.remove('loading', 'error');
+            } catch (error) {
+                console.error(`Failed to load ${scriptPath}:`, error);
+                element.textContent = `Failed to load script from GitHub. Please check the repository or view directly at: ${rawUrl}`;
+                element.classList.remove('loading');
+                element.classList.add('error');
+            }
+        }
+        
+        // Load both scripts when page loads
+        document.addEventListener('DOMContentLoaded', function() {
+            loadScriptFromGitHub('full-script-code', 'ollama_batch_automation.sh');
+            loadScriptFromGitHub('interactive-script-code', 'ollama_interactive.sh');
+        });
+    </script>
+</body>
+</html>
