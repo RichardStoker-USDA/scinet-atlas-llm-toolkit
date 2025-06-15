@@ -59,3 +59,14 @@ richard.stoker@usda.gov
 The SCINet initiative is an effort by the USDA [Agricultural Research Service (ARS)](https://www.ars.usda.gov/) to grow USDA's research capacity by providing scientists with access to high-performance computing clusters, high-speed networking for data transfer, and training in scientific computing.
 
 For more information about SCINet Atlas and getting an account, visit: https://scinet.usda.gov/
+
+## About Ollama
+
+This toolkit uses [Ollama](https://github.com/ollama/ollama) for serving Large Language Models. Ollama is an open-source project that makes it easy to run LLMs locally with GPU acceleration.
+
+For Ollama-specific questions, model compatibility, or troubleshooting:
+- **Ollama GitHub Repository:** https://github.com/ollama/ollama
+- **Ollama Documentation:** https://ollama.com/
+- **Available Models:** https://ollama.com/library
+
+The toolkit handles Ollama configuration automatically, but understanding Ollama's capabilities can help you make better use of the available models and features.
