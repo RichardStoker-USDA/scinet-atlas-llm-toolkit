@@ -844,7 +844,7 @@
                             <li><strong>VRAM ranges reflect quantization levels:</strong> Lower VRAM requirements for INT4/INT8 quantized models, higher VRAM requirements for FP16/BF16 full precision</li>
                             <li><strong>Context window impact:</strong> Larger context windows (128k+ tokens) require significantly more VRAM due to KV cache. Add 20-50% more VRAM for very large contexts</li>
                             <li><strong>MoE efficiency:</strong> Mixture-of-Experts models require full model loading in VRAM but achieve faster inference since only active parameters are used during token generation</li>
-                            <li><strong>Multi-GPU scaling:</strong> Large models benefit from tensor parallelism across multiple GPUs for better performance</li>
+                            <li><strong>Multi-GPU scaling:</strong> Multiple GPUs enable loading very large models that exceed single GPU VRAM capacity through tensor parallelism</li>
                         </ul>
                     </div>
                     
