@@ -14,7 +14,7 @@ BLUE='\033[0;34m'
 NC='\033[0m' # No Color
 
 # Default values
-DEFAULT_TEST_MODEL="gemma2:2b"
+DEFAULT_TEST_MODEL="gemma3:1b"
 SESSION_USER=$(whoami)
 
 echo -e "${BLUE}===============================================${NC}"
