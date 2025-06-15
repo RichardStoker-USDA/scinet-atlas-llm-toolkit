@@ -64,5 +64,4 @@ For more information about SCINet Atlas and getting an account, visit: https://s
 
 This toolkit uses [Ollama](https://github.com/ollama/ollama) for serving Large Language Models. For Ollama-specific questions:
 - **GitHub Repository:** https://github.com/ollama/ollama
-- **Documentation:** https://ollama.com/
 - **Available Models:** https://ollama.com/library
