@@ -744,6 +744,8 @@
                         <li><strong>Performance:</strong> Optimized for GPU acceleration, efficient for demanding LLM computations</li>
                         <li><strong>Popularity:</strong> One of the most popular tools for researchers working with open-source LLMs</li>
                     </ul>
+                    
+                    <p><strong>Learn More:</strong> For detailed documentation, model library, and installation guides, visit the official <a href="https://github.com/ollama/ollama" target="_blank">Ollama GitHub repository</a>.</p>
                 </section>
                 
                 <!-- Section 2: Core Concepts -->
@@ -916,22 +918,28 @@
                     </div>
                     
                     <h4><span class="step-counter">2</span>Load Required Modules</h4>
-                    <p>Once your Atlas desktop session is active, open a terminal and load the necessary modules:</p>
+                    <p><strong>Good news!</strong> The batch automation script automatically loads all required modules when you run it. However, for manual operations or verification, the following modules are used:</p>
+                    
+                    <div class="alert alert-info">
+                        <strong>Auto-loaded by script:</strong> The script automatically runs <code>module load cuda cudnn apptainer</code> so you don't need to load these manually.
+                    </div>
                     
                     <div class="code-block">
                         <div class="code-header">
-                            Module Loading Commands
-                            <button type="button" class="copy-btn" onclick="copyCode('module-load-code')">Copy</button>
+                            Optional: Load nvtop for GPU monitoring
+                            <button type="button" class="copy-btn" onclick="copyCode('nvtop-load-code')">Copy</button>
                         </div>
-                        <pre id="module-load-code"># Load Apptainer (required for running Ollama container)
-module load apptainer
+                        <pre id="nvtop-load-code"># Optional: Load nvtop for real-time GPU monitoring
+module load nvtop
 
-# Verify modules are loaded
-module list</pre>
+# Open nvtop in terminal to monitor GPU usage
+nvtop</pre>
                     </div>
                     
+                    <p><strong>Using nvtop:</strong> Load nvtop and open it in an Xterm window to verify GPUs are detected and monitor VRAM usage during LLM loading and inference. This helps ensure models load to GPU memory rather than system RAM.</p>
+                    
                     <div class="alert alert-warning">
-                        <strong>Important:</strong> Module versions may change over time. If you encounter issues, check available versions with <code>module avail apptainer</code> and update the script's module loading section accordingly.
+                        <strong>Important:</strong> Module versions may change over time. If you encounter issues, check available versions with <code>module avail apptainer</code> or <code>module avail cuda</code> and update the script's module loading section (line 269) accordingly.
                     </div>
                 </section>
                 
@@ -954,8 +962,108 @@ module list</pre>
 │   ├── prompt_001.txt
 │   ├── prompt_002.txt
 │   └── synthesis_question.txt    # Optional: for synthesis mode
-├── results/                      # Output directory (created automatically)
-└── containers/                   # Container storage (created automatically)</pre>
+└── results/                      # Output directory (created automatically)</pre>
+                    </div>
+                    
+                    <h4>Quick Setup Script</h4>
+                    <p>Use this script to automatically create the complete directory structure with test prompts about USDA Agricultural Research Service (ARS). You can modify the test prompts or delete the synthesis question if not needed:</p>
+                    
+                    <div class="collapsible">
+                        <div class="collapsible-header" onclick="toggleCollapsible(this)">
+                            <span>Setup Script with ARS Test Data</span>
+                            <span class="collapsible-icon">▼</span>
+                        </div>
+                        <div class="collapsible-content">
+                            <div class="code-block">
+                                <div class="code-header">
+                                    Complete Setup Script
+                                    <button type="button" class="copy-btn" onclick="copyCode('setup-script-code')">Copy</button>
+                                </div>
+                                <pre id="setup-script-code">#!/bin/bash
+# Quick setup script for SCINet Atlas LLM Toolkit
+# Creates directory structure and sample ARS prompts
+
+echo "Setting up SCINet Atlas LLM Toolkit directory structure..."
+
+# Create main directories
+mkdir -p input_prompts results
+
+echo "Creating sample ARS research prompts..."
+
+# Sample prompt 1: ARS Research Overview
+cat > input_prompts/ars_research_overview.txt << 'EOF'
+Provide a comprehensive overview of the USDA Agricultural Research Service (ARS) including its mission, key research areas, and impact on American agriculture. Focus on recent innovations and breakthroughs that have benefited farmers and consumers.
+EOF
+
+# Sample prompt 2: ARS Sustainability Research
+cat > input_prompts/ars_sustainability_research.txt << 'EOF'
+Describe the Agricultural Research Service's contributions to sustainable agriculture practices. Include specific research programs, methodologies, and findings that promote environmental stewardship while maintaining agricultural productivity.
+EOF
+
+# Sample prompt 3: ARS Climate Research
+cat > input_prompts/ars_climate_adaptation.txt << 'EOF'
+Analyze the role of USDA-ARS in developing climate-resilient agricultural systems. Discuss specific research initiatives, crop varieties, and farming practices developed to help agriculture adapt to changing climate conditions.
+EOF
+
+# Sample prompt 4: ARS Technology Innovation
+cat > input_prompts/ars_technology_innovation.txt << 'EOF'
+Examine the Agricultural Research Service's leadership in agricultural technology innovation, including precision agriculture, biotechnology applications, and digital farming tools that enhance productivity and efficiency.
+EOF
+
+# Synthesis question for meta-analysis
+cat > input_prompts/synthesis_question.txt << 'EOF'
+Based on the comprehensive analysis of USDA-ARS research across multiple domains, synthesize the key themes and provide recommendations for how ARS research priorities should evolve to address future agricultural challenges while building on current strengths and innovations.
+EOF
+
+echo "Directory structure created successfully!"
+echo ""
+echo "Created directories:"
+echo "  input_prompts/ - Contains 4 sample ARS research prompts"
+echo "  results/ - Ready for batch processing outputs"
+echo ""
+echo "Sample files created:"
+echo "  ars_research_overview.txt"
+echo "  ars_sustainability_research.txt"
+echo "  ars_climate_adaptation.txt"
+echo "  ars_technology_innovation.txt"
+echo "  synthesis_question.txt (optional - delete if not using synthesis mode)"
+echo ""
+echo "Next steps:"
+echo "1. Update PROJECT_NAME variable in batch script to your SCINet project"
+echo "2. Modify the sample prompts for your specific research needs"
+echo "3. Run: ./ollama_batch_automation.sh [model] ./input_prompts ./results [gpus] [context_size]"
+echo ""
+echo "Setup complete! Ready for LLM batch processing."</pre>
+                            </div>
+                            <p><strong>Usage:</strong> Save this script as <code>setup_directory.sh</code>, make it executable with <code>chmod +x setup_directory.sh</code>, then run <code>./setup_directory.sh</code> to create the complete structure with test prompts. You can then modify the prompts for your research or delete <code>synthesis_question.txt</code> if you don't need synthesis mode.</p>
+                        </div>
+                    </div>
+                    
+                    <h3>5.2. Synthesis Mode</h3>
+                    <p><strong>Synthesis mode</strong> is an advanced feature that performs meta-analysis across all your prompt results. Here's how it works:</p>
+                    
+                    <h4>How Synthesis Works:</h4>
+                    <ul>
+                        <li><strong>Step 1:</strong> The script processes all your individual prompt files normally</li>
+                        <li><strong>Step 2:</strong> After all individual analyses complete, it combines all results</li>
+                        <li><strong>Step 3:</strong> Uses your synthesis question to analyze patterns across all outputs</li>
+                        <li><strong>Step 4:</strong> Generates a comprehensive meta-analysis in <code>synthesis_analysis/</code></li>
+                    </ul>
+                    
+                    <h4>When to Use Synthesis Mode:</h4>
+                    <ul>
+                        <li><strong>Research projects:</strong> When you need to identify themes across multiple data sources</li>
+                        <li><strong>Literature reviews:</strong> Synthesizing findings from multiple documents</li>
+                        <li><strong>Policy analysis:</strong> Drawing conclusions from various policy documents</li>
+                        <li><strong>Comparative studies:</strong> Finding patterns across different cases or scenarios</li>
+                    </ul>
+                    
+                    <h4>How to Enable/Disable:</h4>
+                    <p><strong>Enable:</strong> Include a <code>synthesis_question.txt</code> file in your <code>input_prompts/</code> directory</p>
+                    <p><strong>Disable:</strong> Simply delete or rename the <code>synthesis_question.txt</code> file</p>
+                    
+                    <div class="alert alert-info">
+                        <strong>Pro Tip:</strong> Synthesis mode uses your model's full context window, so ensure your combined results don't exceed the model's token limit. For large datasets, consider using models with larger context windows like 128k+ tokens.
                     </div>
                 </section>
                 
@@ -973,6 +1081,19 @@ module list</pre>
                         </div>
                         <pre id="basic-syntax-code">./ollama_batch_automation.sh [model_name] [input_dir] [output_dir] [num_gpus] [ctx_size] [flags]</pre>
                     </div>
+                    
+                    <h4>Example Command</h4>
+                    <p>Here's a typical command for processing research data with a high-quality model:</p>
+                    
+                    <div class="code-block">
+                        <div class="code-header">
+                            Sample Command
+                            <button type="button" class="copy-btn" onclick="copyCode('sample-command-code')">Copy</button>
+                        </div>
+                        <pre id="sample-command-code">./ollama_batch_automation.sh llama3:70b-instruct-q8_0 ./input_prompts ./results 6 131072 -s</pre>
+                    </div>
+                    
+                    <p>This command runs the Llama 3 70B model with 6 GPUs, 128k context window, and skips confirmation prompts.</p>
                     
                     <h3>6.2. Parameters Explained</h3>
                     <table class="parameter-table">
@@ -1054,7 +1175,19 @@ module list</pre>
                     <h2>8. Script Customization</h2>
                     
                     <h3>8.1. Adapting for Different Projects</h3>
-                    <p>To use this script in different project environments, you'll need to modify several key variables:</p>
+                    <p>Understanding SCINet project structure is crucial for proper setup:</p>
+                    
+                    <div class="alert alert-info">
+                        <h4>SCINet Project Structure Explained:</h4>
+                        <ul>
+                            <li><strong>Main SCINet Project:</strong> The official project name assigned by SCINet (e.g., "smith_plantgenomics"). Request these at <a href="https://scinet.usda.gov/support/request" target="_blank">SCINet Support</a>.</li>
+                            <li><strong>User Subdirectory:</strong> Your personal folder within the main project (e.g., "/90daydata/smith_plantgenomics/john_smith/").</li>
+                            <li><strong>Experiment Folder:</strong> Your specific research project folder (e.g., "/90daydata/smith_plantgenomics/john_smith/llm_experiment/").</li>
+                        </ul>
+                        <p><strong>Workflow:</strong> Update PROJECT_NAME to your main SCINet project → Create your user subdirectory → Run this toolkit in your experiment folder.</p>
+                    </div>
+                    
+                    <p>To use this script in different project environments, you'll need to modify the PROJECT_NAME variable:</p>
                     
                     <div class="collapsible">
                         <div class="collapsible-header" onclick="toggleCollapsible(this)">
@@ -1076,7 +1209,7 @@ PROJECT_NAME="lemay_diet_guthealth"           # ⚠️ CHANGE TO YOUR PROJECT NA
                             </div>
                             
                             <div class="alert alert-warning">
-                                <strong>Critical:</strong> The <code>PROJECT_NAME</code> variable must match your Atlas project account name. This is used for storage path construction and resource allocation.
+                                <strong>Critical:</strong> The <code>PROJECT_NAME</code> variable must match your main SCINet project name (not your subdirectory). This creates the working path: <code>/90daydata/PROJECT_NAME/your_username/</code> where the toolkit operates.
                             </div>
                         </div>
                     </div>
@@ -1253,9 +1386,9 @@ PROJECT_NAME="lemay_diet_guthealth"           # ⚠️ CHANGE TO YOUR PROJECT NA
                         <strong>Support Resources:</strong>
                         <ul>
                             <li><strong>Script Creator:</strong> Richard Stoker (richard.stoker@usda.gov)</li>
-                            <li><strong>GitHub:</strong> https://github.com/RichardStoker-USDA/scinet-atlas-llm-toolkit/</li>
-                            <li><strong>SCINet Support:</strong> https://scinet.usda.gov/support/contact</li>
-                            <li><strong>Atlas Documentation:</strong> https://scinet.usda.gov/guides/resources/atlas</li>
+                            <li><strong>GitHub:</strong> <a href="https://github.com/RichardStoker-USDA/scinet-atlas-llm-toolkit/" target="_blank">https://github.com/RichardStoker-USDA/scinet-atlas-llm-toolkit/</a></li>
+                            <li><strong>SCINet Support:</strong> <a href="https://scinet.usda.gov/support/contact" target="_blank">https://scinet.usda.gov/support/contact</a></li>
+                            <li><strong>Atlas Documentation:</strong> <a href="https://scinet.usda.gov/guides/resources/atlas" target="_blank">https://scinet.usda.gov/guides/resources/atlas</a></li>
                         </ul>
                     </div>
                 </section>
