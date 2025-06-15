@@ -294,8 +294,8 @@ if [ "$RUN_INTERACTIVE" = true ]; then
     if [ -f "./ollama_interactive.sh" ]; then
         echo -e "${GREEN}Launching interactive session with $DEFAULT_TEST_MODEL...${NC}"
         echo ""
-        # Launch the interactive script directly
-        exec ./ollama_interactive.sh "$DEFAULT_TEST_MODEL"
+        # Launch the interactive script directly with 8k context
+        exec ./ollama_interactive.sh "$DEFAULT_TEST_MODEL" "auto" "8192"
     else
         echo -e "${RED}Error: ollama_interactive.sh not found in workspace${NC}"
         echo -e "${YELLOW}Please copy the scripts manually and try again${NC}"

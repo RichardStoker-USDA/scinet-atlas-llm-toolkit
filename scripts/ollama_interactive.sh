@@ -17,7 +17,7 @@ NC='\033[0m' # No Color
 
 # Configuration - adjust these as needed
 DEFAULT_MODEL="gemma3:27b"
-DEFAULT_CONTEXT_SIZE=131072  # 128k tokens
+DEFAULT_CONTEXT_SIZE=8192  # 8k tokens - safe default for most models
 PROJECT_NAME="lemay_diet_guthealth"
 
 # Initialize variables
@@ -48,14 +48,14 @@ show_usage() {
     echo "  -h, --help         Show this help message"
     echo ""
     echo -e "${YELLOW}Examples:${NC}"
-    echo "  # Basic usage"
-    echo "  $0 gemma3:27b 2 131072"
+    echo "  # Basic usage with default context"
+    echo "  $0 gemma3:1b 1"
     echo ""
-    echo -e "${YELLOW}  # Large context window"
-    echo "  $0 llama3:70b 4 200000"
+    echo -e "${YELLOW}  # Larger context window for complex tasks"
+    echo "  $0 llama3.3:70b 4 32768"
     echo ""
     echo -e "${YELLOW}  # Auto-run without confirmations"
-    echo "  $0 deepseek-r1:8b 6 150000 -s"
+    echo "  $0 gemma3:27b 2 16384 -s"
     echo ""
     echo -e "${YELLOW}  # Custom user directory"
     echo "  $0 gemma3:27b 2 100000 -u custom_dir"

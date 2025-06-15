@@ -17,7 +17,7 @@ NC='\033[0m' # No Color
 
 # Configuration - adjust these as needed
 DEFAULT_MODEL="gemma3:27b"
-DEFAULT_CONTEXT_SIZE=131072  # 128k tokens - go big or go home
+DEFAULT_CONTEXT_SIZE=8192  # 8k tokens - safe default for most models
 PROJECT_NAME="lemay_diet_guthealth"
 
 # Initialize variables
@@ -54,17 +54,17 @@ show_usage() {
     echo "  -h, --help         Show this help message"
     echo ""
     echo -e "${YELLOW}Examples:${NC}"
-    echo "  # Basic usage"
-    echo "  $0 gemma3:27b ./prompts ./results 2 131072"
+    echo "  # Basic usage with small model"
+    echo "  $0 gemma3:1b ./prompts ./results 1 8192"
     echo ""
     echo "  # With reasoning mode enabled"
-    echo "  $0 deepseek-r1:8b ./data ./output 4 131072 -r"
+    echo "  $0 deepseek-r1:8b ./data ./output 2 32768 -r"
     echo ""
-    echo "  # Auto-run without confirmations"
-    echo "  $0 llama3:70b ./research ./analysis 8 200000 -s"
+    echo "  # Large model with moderate context"
+    echo "  $0 llama3.3:70b ./research ./analysis 6 32768 -s"
     echo ""
     echo "  # Full features: reasoning + auto-run + custom dir"
-    echo "  $0 deepseek-r1:8b ./complex_data ./results 6 200000 -r -s -u custom_dir"
+    echo "  $0 deepseek-r1:8b ./complex_data ./results 3 16384 -r -s -u custom_dir"
     echo ""
     echo -e "${YELLOW}Reasoning Models Available in Ollama:${NC}"
     echo "• deepseek-r1:8b (DeepSeek reasoning model - 8B parameters)"
