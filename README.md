@@ -23,6 +23,7 @@ Key features:
 
 ## Scripts
 
+- `atlas_setup.sh` - **New!** Complete automated setup script
 - `scripts/ollama_batch_automation.sh` - Processes multiple prompt files automatically
 - `scripts/ollama_interactive.sh` - Interactive chat mode for testing
 
@@ -32,12 +33,24 @@ Key features:
 - Atlas Open OnDemand interface access
 - Access to a project that gives access to GPUs as well
 
-## Getting Started
+## Quick Start
 
+**Automated Setup (Recommended):**
+1. Clone this repository: `git clone https://github.com/RichardStoker-USDA/scinet-atlas-llm-toolkit.git`
+2. Run the setup script: `./atlas_setup.sh`
+3. Follow the prompts to configure your workspace and test the system
+
+**Manual Setup:**
 1. Read the <a href="https://richardstoker-usda.github.io/scinet-atlas-llm-toolkit/" target="_blank">complete manual</a>
 2. Download the scripts from the `scripts/` directory  
 3. Update the `PROJECT_NAME` variable in both scripts to match your Atlas project
 4. Follow the detailed setup instructions in the manual
+
+## Scripts
+
+- `atlas_setup.sh` - **New!** Complete automated setup script
+- `scripts/ollama_batch_automation.sh` - Processes multiple prompt files automatically
+- `scripts/ollama_interactive.sh` - Interactive chat mode for testing
 
 ## Contact
 

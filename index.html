@@ -992,8 +992,15 @@ nvtop</pre>
 └── results/                      # Output directory (created automatically)</pre>
                     </div>
                     
-                    <h4>Quick Setup Script</h4>
-                    <p>Use this script to automatically create the complete directory structure with test prompts based on ARS Davis research units. The script will prompt you for your project name and create a personalized workspace. You can modify the test prompts or delete the synthesis question if not needed:</p>
+                    <h4>Automated Atlas Setup Script</h4>
+                    <p><strong>New!</strong> For the complete automated setup experience, use the <code>atlas_setup.sh</code> script included in the repository. This script handles everything from project validation to model testing.</p>
+                    
+                    <div class="alert alert-success">
+                        <strong>Complete Setup:</strong> After cloning the repository, simply run <code>./atlas_setup.sh</code> for a fully automated setup that includes project validation, workspace creation, container download, and model testing.
+                    </div>
+                    
+                    <h4>Manual Setup Script (Alternative)</h4>
+                    <p>Alternatively, use this manual script to create directory structure with test prompts. The script will prompt you for your project name and create a personalized workspace:</p>
                     
                     <div class="collapsible">
                         <div class="collapsible-header" onclick="toggleCollapsible(this)">
