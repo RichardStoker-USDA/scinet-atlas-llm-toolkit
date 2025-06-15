@@ -830,10 +830,10 @@
                             </tr>
                             <tr>
                                 <td>Reasoning Models</td>
-                                <td>8B-32B parameters</td>
-                                <td>1-2 GPUs</td>
-                                <td>~6-40 GB</td>
-                                <td>deepseek-r1:8b, cogito:7b</td>
+                                <td>70B parameters</td>
+                                <td>2-3 GPUs</td>
+                                <td>~43-90 GB</td>
+                                <td>r1-1776:70b, cogito:7b</td>
                             </tr>
                         </tbody>
                     </table>
@@ -841,9 +841,9 @@
                     <div class="alert alert-info">
                         <strong>Important Notes:</strong>
                         <ul>
-                            <li><strong>VRAM ranges reflect quantization levels:</strong> Lower values for INT4/INT8 quantized models, higher values for FP16/BF16 full precision</li>
+                            <li><strong>VRAM ranges reflect quantization levels:</strong> Lower VRAM requirements for INT4/INT8 quantized models, higher VRAM requirements for FP16/BF16 full precision</li>
                             <li><strong>Context window impact:</strong> Larger context windows (128k+ tokens) require significantly more VRAM due to KV cache. Add 20-50% more VRAM for very large contexts</li>
-                            <li><strong>MoE efficiency:</strong> Mixture-of-Experts models use much less VRAM than equivalent dense models since only active parameters are loaded</li>
+                            <li><strong>MoE efficiency:</strong> Mixture-of-Experts models require full model loading in VRAM but achieve faster inference since only active parameters are used during token generation</li>
                             <li><strong>Multi-GPU scaling:</strong> Large models benefit from tensor parallelism across multiple GPUs for better performance</li>
                         </ul>
                     </div>
