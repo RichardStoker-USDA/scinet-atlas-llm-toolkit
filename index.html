@@ -803,40 +803,50 @@
                             <tr>
                                 <td>Medium Dense</td>
                                 <td>13B-27B parameters</td>
-                                <td>1 GPU</td>
-                                <td>~12-25 GB</td>
+                                <td>1-2 GPUs</td>
+                                <td>~12-54 GB</td>
                                 <td>llama3.1:13b, gemma3:27b</td>
                             </tr>
                             <tr>
                                 <td>Large Dense</td>
                                 <td>70B parameters</td>
-                                <td>1 GPU</td>
-                                <td>~60-70 GB</td>
+                                <td>2-6 GPUs</td>
+                                <td>~35-160 GB</td>
                                 <td>llama3.3:70b</td>
                             </tr>
                             <tr>
                                 <td>Small MoE</td>
                                 <td>Scout (109B total, 17B active)</td>
-                                <td>2-3 GPUs</td>
-                                <td>~67 GB (quantized)</td>
+                                <td>1-2 GPUs</td>
+                                <td>~25-40 GB</td>
                                 <td>llama4:scout</td>
                             </tr>
                             <tr>
                                 <td>Large MoE</td>
                                 <td>Maverick (400B total, 17B active)</td>
-                                <td>4+ GPUs</td>
-                                <td>~200+ GB</td>
+                                <td>2-3 GPUs</td>
+                                <td>~40-80 GB</td>
                                 <td>llama4:maverick</td>
                             </tr>
                             <tr>
                                 <td>Reasoning Models</td>
-                                <td>Various sizes (8B-70B)</td>
+                                <td>8B-32B parameters</td>
                                 <td>1-2 GPUs</td>
-                                <td>Varies by base model</td>
-                                <td>r1-1776, cogito:8b</td>
+                                <td>~6-40 GB</td>
+                                <td>deepseek-r1:8b, cogito:7b</td>
                             </tr>
                         </tbody>
                     </table>
+                    
+                    <div class="alert alert-info">
+                        <strong>Important Notes:</strong>
+                        <ul>
+                            <li><strong>VRAM ranges reflect quantization levels:</strong> Lower values for INT4/INT8 quantized models, higher values for FP16/BF16 full precision</li>
+                            <li><strong>Context window impact:</strong> Larger context windows (128k+ tokens) require significantly more VRAM due to KV cache. Add 20-50% more VRAM for very large contexts</li>
+                            <li><strong>MoE efficiency:</strong> Mixture-of-Experts models use much less VRAM than equivalent dense models since only active parameters are loaded</li>
+                            <li><strong>Multi-GPU scaling:</strong> Large models benefit from tensor parallelism across multiple GPUs for better performance</li>
+                        </ul>
+                    </div>
                     
                     <h3>3.2. Time Estimation Guidelines</h3>
                     <div class="alert alert-warning">
