@@ -128,60 +128,40 @@ echo ""
 # Step 5: Copy scripts
 echo -e "${YELLOW}Step 5: Script Installation${NC}"
 
-# Get the directory where atlas_setup.sh is located
+# Get the directory where atlas_setup.sh is located (the repo directory)
 SETUP_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-echo -e "${BLUE}Setup script location: $SETUP_DIR${NC}"
+echo -e "${BLUE}Repository location: $SETUP_DIR${NC}"
 
-# Try multiple possible locations for scripts
+# Copy scripts from repository to workspace
 SCRIPTS_COPIED=false
 
-# Location 1: scripts/ subdirectory relative to setup script
-if [ "$SCRIPTS_COPIED" = false ] && [ -f "$SETUP_DIR/scripts/ollama_batch_automation.sh" ]; then
-    if cp "$SETUP_DIR/scripts/ollama_batch_automation.sh" . 2>/dev/null && \
-       cp "$SETUP_DIR/scripts/ollama_interactive.sh" . 2>/dev/null; then
-        chmod +x ollama_batch_automation.sh ollama_interactive.sh
-        echo -e "${GREEN}✓ Copied scripts from: $SETUP_DIR/scripts/${NC}"
+if [ -f "$SETUP_DIR/scripts/ollama_batch_automation.sh" ] && [ -f "$SETUP_DIR/scripts/ollama_interactive.sh" ]; then
+    echo -e "${BLUE}Copying scripts to workspace...${NC}"
+    if cp "$SETUP_DIR/scripts/ollama_batch_automation.sh" "$WORKSPACE_PATH/" && \
+       cp "$SETUP_DIR/scripts/ollama_interactive.sh" "$WORKSPACE_PATH/"; then
+        chmod +x "$WORKSPACE_PATH/ollama_batch_automation.sh" "$WORKSPACE_PATH/ollama_interactive.sh"
+        echo -e "${GREEN}✓ Successfully copied scripts from: $SETUP_DIR/scripts/${NC}"
         SCRIPTS_COPIED=true
-    fi
-fi
-
-# Store the original directory where the setup script was run from
-ORIGINAL_DIR="$(pwd)"
-
-# Location 2: Look in the repository directory where user ran setup from
-if [ "$SCRIPTS_COPIED" = false ]; then
-    echo -e "${BLUE}Looking for scripts in: $ORIGINAL_DIR/scripts/${NC}"
-    
-    if [ -f "$ORIGINAL_DIR/scripts/ollama_batch_automation.sh" ] && [ -f "$ORIGINAL_DIR/scripts/ollama_interactive.sh" ]; then
-        echo -e "${BLUE}Found scripts, copying to workspace...${NC}"
-        if cp "$ORIGINAL_DIR/scripts/ollama_batch_automation.sh" "$WORKSPACE_PATH/" && \
-           cp "$ORIGINAL_DIR/scripts/ollama_interactive.sh" "$WORKSPACE_PATH/"; then
-            chmod +x "$WORKSPACE_PATH/ollama_batch_automation.sh" "$WORKSPACE_PATH/ollama_interactive.sh"
-            echo -e "${GREEN}✓ Successfully copied scripts from: $ORIGINAL_DIR/scripts/${NC}"
-            SCRIPTS_COPIED=true
-        else
-            echo -e "${RED}Failed to copy scripts${NC}"
-        fi
     else
-        echo -e "${YELLOW}Scripts not found in $ORIGINAL_DIR/scripts/${NC}"
+        echo -e "${RED}Failed to copy scripts${NC}"
     fi
+else
+    echo -e "${YELLOW}Scripts not found in $SETUP_DIR/scripts/${NC}"
 fi
-
-# Go back to workspace
-cd "$WORKSPACE_PATH"
 
 if [ "$SCRIPTS_COPIED" = false ]; then
     echo -e "${YELLOW}Warning: Could not automatically copy scripts${NC}"
     echo -e "${YELLOW}Please run these commands to copy scripts manually:${NC}"
     echo ""
-    echo -e "${BLUE}cd $ORIGINAL_DIR${NC}"
-    echo -e "${BLUE}cp scripts/ollama_batch_automation.sh $WORKSPACE_PATH/${NC}"
-    echo -e "${BLUE}cp scripts/ollama_interactive.sh $WORKSPACE_PATH/${NC}"
+    echo -e "${BLUE}cp $SETUP_DIR/scripts/ollama_batch_automation.sh $WORKSPACE_PATH/${NC}"
+    echo -e "${BLUE}cp $SETUP_DIR/scripts/ollama_interactive.sh $WORKSPACE_PATH/${NC}"
     echo -e "${BLUE}cd $WORKSPACE_PATH${NC}"
     echo -e "${BLUE}chmod +x ollama_batch_automation.sh ollama_interactive.sh${NC}"
 fi
 
-# Update PROJECT_NAME in scripts
+# Update PROJECT_NAME in scripts (must be done from workspace directory)
+cd "$WORKSPACE_PATH"
+
 if [ -f "ollama_batch_automation.sh" ]; then
     sed -i "s/PROJECT_NAME=\"[^\"]*\"/PROJECT_NAME=\"$PROJECT_NAME\"/" ollama_batch_automation.sh
     echo -e "${GREEN}✓ Updated PROJECT_NAME in batch script${NC}"
@@ -301,19 +281,26 @@ echo -e "${BLUE}For help and documentation: https://github.com/RichardStoker-USD
 
 echo ""
 echo -e "${YELLOW}Switching to your workspace directory...${NC}"
+
+# Ensure we're in the workspace directory
 cd "$WORKSPACE_PATH"
+echo -e "${GREEN}You are now in: $(pwd)${NC}"
 
 if [ "$RUN_INTERACTIVE" = true ]; then
-    echo -e "${GREEN}Launching interactive session with $DEFAULT_TEST_MODEL...${NC}"
-    echo -e "${BLUE}You are now in: $(pwd)${NC}"
-    echo ""
-    # Launch the interactive script directly
-    exec ./ollama_interactive.sh "$DEFAULT_TEST_MODEL"
+    if [ -f "./ollama_interactive.sh" ]; then
+        echo -e "${GREEN}Launching interactive session with $DEFAULT_TEST_MODEL...${NC}"
+        echo ""
+        # Launch the interactive script directly
+        exec ./ollama_interactive.sh "$DEFAULT_TEST_MODEL"
+    else
+        echo -e "${RED}Error: ollama_interactive.sh not found in workspace${NC}"
+        echo -e "${YELLOW}Please copy the scripts manually and try again${NC}"
+        exec bash
+    fi
 else
-    # Use exec to replace the current shell process with a new one in the workspace
-    echo -e "${GREEN}You are now in: $(pwd)${NC}"
     echo -e "${BLUE}Ready to run: ./ollama_interactive.sh $DEFAULT_TEST_MODEL${NC}"
     echo ""
-    # Start a new shell in the workspace directory
-    exec bash
+    # Start a new shell in the workspace directory with a custom prompt
+    export PS1="[\u@\h \W]$ "
+    exec bash --noprofile --norc
 fi
