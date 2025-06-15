@@ -1328,12 +1328,44 @@ PROJECT_NAME="lemay_diet_guthealth"           # ⚠️ CHANGE TO YOUR PROJECT NA
         function copyCode(elementId) {
             const codeElement = document.getElementById(elementId);
             const text = codeElement.textContent;
+            const button = event.target;
+            const originalText = button.textContent;
             
-            navigator.clipboard.writeText(text).then(function() {
-                // Find the button that was clicked
-                const button = event.target;
-                const originalText = button.textContent;
-                
+            // Try modern clipboard API first
+            if (navigator.clipboard && window.isSecureContext) {
+                navigator.clipboard.writeText(text).then(function() {
+                    // Provide visual feedback
+                    button.textContent = 'Copied!';
+                    button.style.background = 'rgba(255, 255, 255, 0.4)';
+                    
+                    // Reset button after 2 seconds
+                    setTimeout(function() {
+                        button.textContent = originalText;
+                        button.style.background = 'rgba(255, 255, 255, 0.2)';
+                    }, 2000);
+                }).catch(function(err) {
+                    console.error('Clipboard API failed: ', err);
+                    fallbackCopy(text, button, originalText);
+                });
+            } else {
+                // Fallback for older browsers or non-secure contexts
+                fallbackCopy(text, button, originalText);
+            }
+        }
+        
+        function fallbackCopy(text, button, originalText) {
+            // Create temporary textarea
+            const textArea = document.createElement('textarea');
+            textArea.value = text;
+            textArea.style.position = 'fixed';
+            textArea.style.left = '-999999px';
+            textArea.style.top = '-999999px';
+            document.body.appendChild(textArea);
+            textArea.focus();
+            textArea.select();
+            
+            try {
+                document.execCommand('copy');
                 // Provide visual feedback
                 button.textContent = 'Copied!';
                 button.style.background = 'rgba(255, 255, 255, 0.4)';
@@ -1343,10 +1375,12 @@ PROJECT_NAME="lemay_diet_guthealth"           # ⚠️ CHANGE TO YOUR PROJECT NA
                     button.textContent = originalText;
                     button.style.background = 'rgba(255, 255, 255, 0.2)';
                 }, 2000);
-            }).catch(function(err) {
-                console.error('Failed to copy text: ', err);
-                alert('Failed to copy to clipboard. Please copy manually.');
-            });
+            } catch (err) {
+                console.error('Fallback copy failed: ', err);
+                alert('Copy failed. Please select and copy the text manually.');
+            } finally {
+                document.body.removeChild(textArea);
+            }
         }
         
         // Smooth scrolling for table of contents links
